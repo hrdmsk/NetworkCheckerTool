@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUI NSLOOKUP Tool</title>
+    <style>
+        /* ウィンドウ全体のスタイル */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 2em;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        /* コンテンツを中央に配置するためのラッパー */
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        /* 入力欄のスタイル */
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* paddingを含めて幅を100%にする */
+        }
+        /* ボタンのスタイル */
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        /* 結果表示エリアのスタイル */
+        #results {
+            white-space: pre-wrap;      /* 改行やスペースをそのまま表示 */
+            font-family: "Courier New", Courier, monospace;
+            background-color: #e9ecef;
+            padding: 1em;
+            border-radius: 5px;
+            margin-top: 1.5em;
+            min-height: 150px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GUI NSLOOKUP Tool 🌐</h1>
+        
+        <label for="domain"><b>ドメイン名:</b></label>
+        <input type="text" id="domain" value="google.com">
+
+        <label for="server"><b>DNSサーバー (任意):</b></label>
+        <input type="text" id="server" value="8.8.8.8">
+
+        <button onclick="startLookup()">NSLOOKUP 実行</button>
+
+        <h3>結果:</h3>
+        <pre id="results">ここに結果が表示されます...</pre>
+    </div>
+
+    <!-- Eelと連携するために必須のスクリプト -->
+    <script type="text/javascript" src="/eel.js"></script>
+    <!-- 自分で作成したJavaScriptファイル -->
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>
