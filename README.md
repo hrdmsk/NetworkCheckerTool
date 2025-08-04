@@ -1,0 +1,2 @@
+# NSLOOKUPER
+Windows向けNSLOOKUPのGUI版です。
