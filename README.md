@@ -1,2 +1,2 @@
 # NSLOOKUPER
-Windows向けNSLOOKUPのGUI版です。
+Windows向けNSLOOKUPのGUIツールです
