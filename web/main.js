@@ -1,15 +1,3 @@
-/**
- * 指定されたタブを表示し、他を非表示にする関数
- */
-function showTab(tabName) {
-    const contents = document.querySelectorAll('.tab-content');
-    contents.forEach(content => content.classList.remove('active'));
-    const buttons = document.querySelectorAll('.tab-button');
-    buttons.forEach(button => button.classList.remove('active'));
-    document.getElementById(tabName + '-tab').classList.add('active');
-    document.querySelector(`button[onclick="showTab('${tabName}')"]`).classList.add('active');
-}
-
 // --- ローディングアニメーション制御 ---
 let loaderOverlay;
 let loaderText;
@@ -27,11 +15,68 @@ function hideLoader() {
     }
 }
 
-// ページの読み込みが完了したら、イベントリスナーを設定
+// --- ページの読み込み完了時の処理 ---
 document.addEventListener('DOMContentLoaded', async () => {
     loaderOverlay = document.getElementById('loader-overlay');
     loaderText = loaderOverlay.querySelector('.loader-text');
 
+    // --- ★タブとドロップダウンの制御ロジック (修正版) ---
+    const tabClickables = document.querySelectorAll('[data-tab]'); // 全てのタブ(ボタンとリンク)
+    const contentPanes = document.querySelectorAll('.tab-content');
+    const allTabButtons = document.querySelectorAll('.tab-button'); // スタイルを当てるボタン
+    const dropdownBtn = document.getElementById('dropdown-btn');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+
+    // 全てのタブ要素にクリックイベントを設定
+    tabClickables.forEach(clickable => {
+        clickable.addEventListener('click', (event) => {
+            event.preventDefault(); // aタグのデフォルト動作をキャンセル
+            const tabName = clickable.dataset.tab;
+
+            // 1. 全てのコンテンツを非表示にし、全てのタブボタンのアクティブ状態を解除
+            contentPanes.forEach(pane => pane.classList.remove('active'));
+            allTabButtons.forEach(btn => btn.classList.remove('active'));
+
+            // 2. 対応するコンテンツを表示
+            const activePane = document.getElementById(`${tabName}-tab`);
+            if (activePane) {
+                activePane.classList.add('active');
+            }
+
+            // 3. クリックされたボタンをアクティブにする
+            // もしクリックされたのがドロップダウン内の項目なら、親の「その他ツール」をアクティブにする
+            if (clickable.closest('.dropdown-content')) {
+                if(dropdownBtn) dropdownBtn.classList.add('active');
+            } else if(clickable.classList.contains('tab-button')) {
+                clickable.classList.add('active');
+            }
+
+            // 4. ドロップダウンメニューが開いていれば閉じる
+            if (dropdownMenu) dropdownMenu.classList.remove('show');
+        });
+    });
+
+    // ドロップダウンボタンの表示/非表示を切り替える
+    if (dropdownBtn) {
+        dropdownBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // 他のクリックイベントに影響させない
+            if (dropdownMenu) dropdownMenu.classList.toggle('show');
+        });
+    }
+
+    // ドロップダウンの外側をクリックしたら閉じる
+    window.addEventListener('click', (event) => {
+        // ドロップダウンボタン自身がクリックされた場合は、上記のイベントに任せる
+        if (dropdownBtn && !dropdownBtn.contains(event.target)) {
+            if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+                dropdownMenu.classList.remove('show');
+            }
+        }
+    });
+    // --- ★タブとドロップダウンの制御ロジックはここまで ---
+
+
+    // --- DNSサーバーリストの読み込み ---
     const dnsSelect = document.getElementById('dns-server-select');
     const customDnsInput = document.getElementById('custom-dns-server');
 
@@ -59,9 +104,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         dnsSelect.insertBefore(errorOption, dnsSelect.querySelector('option[value="custom"]'));
     }
 
-    dnsSelect.addEventListener('change', () => {
-        customDnsInput.style.display = (dnsSelect.value === 'custom') ? 'block' : 'none';
-    });
+    if(dnsSelect && customDnsInput) {
+        dnsSelect.addEventListener('change', () => {
+            customDnsInput.style.display = (dnsSelect.value === 'custom') ? 'block' : 'none';
+        });
+    }
 });
 
 

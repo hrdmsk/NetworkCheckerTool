@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('web', 'web'), ('.venv\\lib\\site-packages\\whois\\data', 'whois/data')],
+    datas=[('web', 'web'), ('dkim_selectors.json', '.'), ('.venv\\lib\\site-packages\\whois\\data', 'whois/data')],
     hiddenimports=['whois._1_query'],
     hookspath=[],
     hooksconfig={},

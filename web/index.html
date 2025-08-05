@@ -9,14 +9,23 @@
 <body>
     <div class="container">
         <h1>レンタルサーバ確認ツール 🛠️</h1>
+        <!-- Tab Navigation -->
         <div class="tab-buttons">
-            <button class="tab-button active" onclick="showTab('nslookup')">NSLOOKUP</button>
-            <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
-            <button class="tab-button" onclick="showTab('ping')">Ping</button>
-            <button class="tab-button" onclick="showTab('traceroute')">Traceroute</button>
-            <button class="tab-button" onclick="showTab('whois')">Whois</button>
-            <button class="tab-button" onclick="showTab('emailauth')">メール認証</button>
+            <!-- Main Tabs -->
+            <button class="tab-button active" data-tab="nslookup">NSLOOKUP</button>
+            <button class="tab-button" data-tab="portcheck">ポート接続確認</button>
+            <button class="tab-button" data-tab="emailauth">メール認証</button>
+            <button class="tab-button" data-tab="whois">Whois</button>
+            <!-- Dropdown Menu -->
+            <div class="dropdown">
+                <button class="tab-button" id="dropdown-btn">その他ツール ▼</button>
+                <div class="dropdown-content" id="dropdown-menu">
+                    <a href="#" data-tab="ping">Ping</a>
+                    <a href="#" data-tab="traceroute">Traceroute</a>
+                </div>
+            </div>
         </div>
+
         <!-- NSLOOKUPタブ -->
         <div id="nslookup-tab" class="tab-content active">
             <h2>NSLOOKUP</h2>

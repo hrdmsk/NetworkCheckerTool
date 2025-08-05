@@ -1,0 +1,31 @@
+{
+  "selectors": [
+    "google",
+    "selector1",
+    "selector2",
+    "k1",
+    "k2",
+    "k3",
+    "default",
+    "dkim",
+    "mandrill",
+    "mail",
+    "o365",
+    "s1",
+    "s2",
+    "m1",
+    "m2",
+    "m3",
+    "scph01",
+    "scph02",
+    "scph03",
+    "selector",
+    "smtp",
+    "sendgrid",
+    "mailgun",
+    "amazonses",
+    "zoho",
+    "zcs",
+    "pm"
+  ]
+}

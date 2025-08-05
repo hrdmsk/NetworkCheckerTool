@@ -1,10 +1,12 @@
 import eel            # GUIを作成し、PythonとJavaScriptを連携させるためのライブラリ
 import dns.resolver   # NSLOOKUP機能（DNSクエリ）を実行するためのライブラリ
 import socket         # ポート接続確認やホスト名の解決など、低レベルなネットワーク通信を行うためのライブラリ
-import sys            # アプリケーションの終了(sys.exit)に使用
+import sys            # アプリケーションの終了(sys.exit)やパスの解決に使用
 import subprocess     # pingやtracertなどのOSコマンドを実行するためのモジュール
 import locale         # OSの標準文字コードを取得し、コマンド結果の文字化けを防ぐために使用
 import whois          # Whois情報を取得するためのライブラリ
+import json           # DKIMセレクタのJSONファイルを扱うために追加
+import os             # ファイルパスを操作するために追加
 
 # Eelを初期化
 eel.init('web')
@@ -112,6 +114,33 @@ def whois_py(query):
     except Exception as e:
         return f"Whois情報の取得中にエラーが発生しました:\n{e}"
 
+def load_dkim_selectors(filename='dkim_selectors.json'):
+    """
+    JSONファイルからDKIMセレクタのリストを読み込む。
+    PyInstallerでexe化した場合でもファイルパスを正しく解決する。
+    """
+    try:
+        # exe実行時は_MEIPASSが指す一時フォルダが基準
+        if hasattr(sys, '_MEIPASS'):
+            base_path = sys._MEIPASS
+        else:
+            # 通常実行時はこのスクリプトファイルがあるディレクトリが基準
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        file_path = os.path.join(base_path, filename)
+        
+        if not os.path.exists(file_path):
+            print(f"WARNING: Selector file not found at '{file_path}'")
+            return []
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            # JSONデータから 'selectors' というキーの値(リスト)を取得
+            return data.get('selectors', [])
+    except Exception as e:
+        print(f"ERROR: Failed to load or parse selector file '{filename}': {e}")
+        return []
+
 @eel.expose
 def check_email_auth_py(domain, dkim_selector):
     """ SPF, DKIM, DMARCレコードを検索して返す """
@@ -158,8 +187,12 @@ def check_email_auth_py(domain, dkim_selector):
     if dkim_selector:
         selectors_to_check = [dkim_selector]
     else:
-        # 指定されていない場合、一般的なセレクタのリストを使用
-        selectors_to_check = ['google', 'default', 'selector1', 'selector2', 's1', 'k1']
+        # 指定されていない場合、JSONファイルから一般的なセレクタのリストを読み込む
+        selectors_to_check = load_dkim_selectors()
+        if not selectors_to_check:
+            dkim_data['status'] = "DKIMセレクタのJSONファイルが読み込めませんでした。"
+            results.append(dkim_data)
+            return results # JSONが読めないとチェックできないのでここで終了
 
     for selector in selectors_to_check:
         try:
