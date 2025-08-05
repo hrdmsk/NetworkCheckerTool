@@ -14,6 +14,8 @@
             <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
             <button class="tab-button" onclick="showTab('ping')">Ping</button>
             <button class="tab-button" onclick="showTab('traceroute')">Traceroute</button>
+            <button class="tab-button" onclick="showTab('whois')">Whois</button>
+            <button class="tab-button" onclick="showTab('emailauth')">メール認証</button>
         </div>
         <!-- NSLOOKUPタブ -->
         <div id="nslookup-tab" class="tab-content active">
@@ -59,8 +61,34 @@
             <h3>結果:</h3>
             <pre id="traceroute-results" class="result-display">ここにTracerouteの結果が表示されます...</pre>
         </div>
+        <!-- Whoisタブ -->
+        <div id="whois-tab" class="tab-content">
+            <h2>Whois (情報検索)</h2>
+            <label for="whois-target"><b>ドメイン名 or IPアドレス:</b></label>
+            <input type="text" id="whois-target" value="google.com">
+            <button onclick="startWhois()">Whois情報取得</button>
+            <h3>結果:</h3>
+            <pre id="whois-results" class="result-display">ここにWhois情報が表示されます...</pre>
+        </div>
+        <!-- メール認証タブ -->
+        <div id="emailauth-tab" class="tab-content">
+            <h2>メール認証レコード (SPF/DKIM/DMARC)</h2>
+            <label for="emailauth-domain"><b>ドメイン名:</b></label>
+            <input type="text" id="emailauth-domain" value="google.com">
+            <label for="dkim-selector"><b>DKIMセレクタ (任意):</b></label>
+            <input type="text" id="dkim-selector" placeholder="例: google, default, s1">
+            <button onclick="startEmailAuthCheck()">認証レコード確認</button>
+            <h3>結果:</h3>
+            <div id="emailauth-results">ここに結果が表示されます...</div>
+        </div>
     </div>
     <script type="text/javascript" src="/eel.js"></script>
     <script type="text/javascript" src="main.js"></script>
+
+    <!-- ローディングアニメーション用のオーバーレイ -->
+    <div id="loader-overlay">
+        <div class="loader"></div>
+        <div class="loader-text">処理中...</div>
+    </div>
 </body>
 </html>
