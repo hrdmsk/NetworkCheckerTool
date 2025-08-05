@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レンタルサーバー簡易確認ツール</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 2em;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 1.5em;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            color: #555; /* 文字色を濃いグレーに設定して見やすくする */
+        }
+        .tab-button.active {
+            border-bottom-color: #007bff;
+            font-weight: bold;
+            color: #007bff; /* アクティブなタブの文字色を明確にする */
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            white-space: pre-wrap;
+            font-family: "Courier New", Courier, monospace;
+            background-color: #e9ecef;
+            padding: 1em;
+            border-radius: 5px;
+            margin-top: 1.5em;
+            min-height: 150px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GUI Network Tool 🛠️</h1>
+
+        <!-- タブボタン -->
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="showTab('nslookup')">NSLOOKUP</button>
+            <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
+        </div>
+
+        <!-- NSLOOKUPタブのコンテンツ -->
+        <div id="nslookup-tab" class="tab-content active">
+            <h2>NSLOOKUP</h2>
+            <label for="domain"><b>ドメイン名:</b></label>
+            <input type="text" id="domain" value="google.com">
+            <label for="server"><b>DNSサーバー (任意):</b></label>
+            <input type="text" id="server" value="8.8.8.8">
+            <button onclick="startLookup()">NSLOOKUP 実行</button>
+            <h3>結果:</h3>
+            <pre id="nslookup-results">ここに結果が表示されます...</pre>
+        </div>
+
+        <!-- ポート接続確認タブのコンテンツ -->
+        <div id="portcheck-tab" class="tab-content">
+            <h2>ポート接続確認 (TCP)</h2>
+            <label for="portcheck-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
+            <input type="text" id="portcheck-host" value="google.com">
+            <label for="portcheck-port"><b>ポート番号:</b></label>
+            <input type="text" id="portcheck-port" value="443">
+            <button onclick="startPortCheck()">接続テスト実行</button>
+            <h3>結果:</h3>
+            <pre id="portcheck-results">ここに接続テストの結果が表示されます...</pre>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>

@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUI NSLOOKUP Tool</title>
+    <title>レンタルサーバー簡易確認ツール</title>
     <style>
-        /* ウィンドウ全体のスタイル */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
@@ -13,21 +12,44 @@
             background-color: #f4f4f9;
             color: #333;
         }
-        /* コンテンツを中央に配置するためのラッパー */
         .container {
             max-width: 650px;
             margin: 0 auto;
         }
-        /* 入力欄のスタイル */
-        input[type="text"] {
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 1.5em;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            color: #555;
+        }
+        .tab-button.active {
+            border-bottom-color: #007bff;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        input[type="text"], select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box; /* paddingを含めて幅を100%にする */
+            box-sizing: border-box;
+            background-color: white;
         }
-        /* ボタンのスタイル */
         button {
             display: block;
             width: 100%;
@@ -43,9 +65,8 @@
         button:hover {
             background-color: #0056b3;
         }
-        /* 結果表示エリアのスタイル */
-        #results {
-            white-space: pre-wrap;      /* 改行やスペースをそのまま表示 */
+        pre {
+            white-space: pre-wrap;
             font-family: "Courier New", Courier, monospace;
             background-color: #e9ecef;
             padding: 1em;
@@ -58,23 +79,49 @@
 </head>
 <body>
     <div class="container">
-        <h1>GUI NSLOOKUP Tool 🌐</h1>
-        
-        <label for="domain"><b>ドメイン名:</b></label>
-        <input type="text" id="domain" value="google.com">
+        <h1>GUI Network Tool 🛠️</h1>
 
-        <label for="server"><b>DNSサーバー (任意):</b></label>
-        <input type="text" id="server" value="8.8.8.8">
+        <!-- タブボタン -->
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="showTab('nslookup')">NSLOOKUP</button>
+            <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
+        </div>
 
-        <button onclick="startLookup()">NSLOOKUP 実行</button>
+        <!-- NSLOOKUPタブのコンテンツ -->
+        <div id="nslookup-tab" class="tab-content active">
+            <h2>NSLOOKUP</h2>
+            <label for="domain"><b>ドメイン名:</b></label>
+            <input type="text" id="domain" value="google.com">
 
-        <h3>結果:</h3>
-        <pre id="results">ここに結果が表示されます...</pre>
+            <label for="dns-server-select"><b>DNSサーバー:</b></label>
+            <select id="dns-server-select">
+                <option value="">システムのデフォルト</option>
+                <option value="8.8.8.8" selected>Google (8.8.8.8)</option>
+                <option value="1.1.1.1">Cloudflare (1.1.1.1)</option>
+                <option value="208.67.222.222">OpenDNS (208.67.222.222)</option>
+                <option value="custom">カスタム...</option>
+            </select>
+            <input type="text" id="custom-dns-server" placeholder="カスタムDNSサーバーのIPを入力" style="display: none; margin-top: -10px; margin-bottom: 15px;">
+
+            <button onclick="startLookup()">NSLOOKUP 実行</button>
+            <h3>結果:</h3>
+            <pre id="nslookup-results">ここに結果が表示されます...</pre>
+        </div>
+
+        <!-- ポート接続確認タブのコンテンツ -->
+        <div id="portcheck-tab" class="tab-content">
+            <h2>ポート接続確認 (TCP)</h2>
+            <label for="portcheck-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
+            <input type="text" id="portcheck-host" value="google.com">
+            <label for="portcheck-port"><b>ポート番号:</b></label>
+            <input type="text" id="portcheck-port" value="443">
+            <button onclick="startPortCheck()">接続テスト実行</button>
+            <h3>結果:</h3>
+            <pre id="portcheck-results">ここに接続テストの結果が表示されます...</pre>
+        </div>
     </div>
 
-    <!-- Eelと連携するために必須のスクリプト -->
     <script type="text/javascript" src="/eel.js"></script>
-    <!-- 自分で作成したJavaScriptファイル -->
     <script type="text/javascript" src="main.js"></script>
 </body>
 </html>

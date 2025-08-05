@@ -1,2 +1,3 @@
 # NSLOOKUPER
-Windows向けNSLOOKUPのGUIツールです
+Windows向けレンタルサーバーの確認ツールです。
+そのうちいろいろ詰め込みます
