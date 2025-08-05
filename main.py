@@ -1,10 +1,27 @@
-import eel
-import dns.resolver
-import socket
-import sys
-import subprocess
-import locale
-import json # JSONファイルを扱うためにインポート
+import eel            # GUIを作成し、PythonとJavaScriptを連携させるためのライブラリ
+import dns.resolver   # NSLOOKUP機能（DNSクエリ）を実行するためのライブラリ
+import socket         # ポート接続確認やホスト名の解決など、低レベルなネットワーク通信を行うためのライブラリ
+import sys            # アプリケーションの終了(sys.exit)や、EXE化された際のパス解決に使用
+import subprocess     # pingやtracertなどのOSコマンドを実行するためのモジュール
+import locale         # OSの標準文字コードを取得し、コマンド結果の文字化けを防ぐために使用
+import json           # DNSサーバーのリストを記述したJSONファイルを読み込むために使用
+import os             # ファイルパスを解決するためにインポート
+
+# --- ここからが追加部分 ---
+def resource_path(relative_path):
+    """
+    EXE化された場合と、スクリプト実行の場合の両方で
+    リソースへの正しいパスを取得します。
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstallerによって作成された一時フォルダからパスを取得
+        base_path = sys._MEIPASS
+    else:
+        # スクリプトとして実行されている場合は、カレントディレクトリからのパス
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+# --- ここまでが追加部分 ---
 
 # Eelを初期化
 eel.init('web')
@@ -12,19 +29,20 @@ eel.init('web')
 @eel.expose
 def get_dns_servers():
     """ web/dns_servers.jsonを読み込んで、サーバーのリストを返す """
+    # resource_pathヘルパーを使ってファイルのパスを取得
+    json_path = resource_path('web/dns_servers.json')
     try:
-        with open('web/dns_servers.json', 'r', encoding='utf-8') as f:
+        with open(json_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        return [] # ファイルが見つからない場合は空のリストを返す
+        return []
     except json.JSONDecodeError:
-        return [] # JSONの形式が正しくない場合は空のリストを返す
+        return []
 
 @eel.expose
 def nslookup_py(domain, server):
     """
     JavaScriptから呼び出されるNSLOOKUP処理。
-    結果を構造化された辞書型のリストで返す。
     """
     if not domain:
         return {'error': "ドメイン名を入力してください。"}
@@ -32,7 +50,6 @@ def nslookup_py(domain, server):
     results = []
     resolver = dns.resolver.Resolver()
     
-    # DNSサーバーの設定
     if server:
         try:
             server_ip = socket.gethostbyname(server)
