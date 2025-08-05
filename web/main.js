@@ -16,13 +16,38 @@ function showTab(tabName) {
     document.querySelector(`button[onclick="showTab('${tabName}')"]`).classList.add('active');
 }
 
+// ページの読み込みが完了したら、イベントリスナーを設定
+document.addEventListener('DOMContentLoaded', () => {
+    const dnsSelect = document.getElementById('dns-server-select');
+    const customDnsInput = document.getElementById('custom-dns-server');
+
+    // プルダウンメニューの値が変更されたときの処理
+    dnsSelect.addEventListener('change', () => {
+        // もし「カスタム」が選ばれたら、カスタム入力欄を表示
+        if (dnsSelect.value === 'custom') {
+            customDnsInput.style.display = 'block';
+        } else {
+            // それ以外の場合は非表示
+            customDnsInput.style.display = 'none';
+        }
+    });
+});
+
+
 /**
  * NSLOOKUPを実行する非同期関数
  */
 async function startLookup() {
     const domain = document.getElementById('domain').value;
-    const server = document.getElementById('server').value;
     const resultsDiv = document.getElementById('nslookup-results');
+
+    // DNSサーバーの選択値を取得
+    const dnsSelect = document.getElementById('dns-server-select');
+    let server = dnsSelect.value;
+    // もし「カスタム」が選択されていたら、カスタム入力欄の値を使用
+    if (server === 'custom') {
+        server = document.getElementById('custom-dns-server').value;
+    }
 
     if (!domain) {
         resultsDiv.textContent = 'ドメイン名を入力してください。';
@@ -54,7 +79,6 @@ async function startPortCheck() {
     resultsDiv.textContent = '接続を試みています...';
 
     try {
-        // Pythonの test_port_connection_py 関数を呼び出す
         const resultText = await eel.test_port_connection_py(host, port)();
         resultsDiv.textContent = resultText;
     } catch (error) {
