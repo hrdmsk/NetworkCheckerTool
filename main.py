@@ -6,9 +6,9 @@ import sys # アプリケーション終了のためにインポート
 # Eelを初期化
 eel.init('web')
 
-# --- 既存の関数 ---
 @eel.expose
 def nslookup_py(domain, server):
+    """ JavaScriptから呼び出されるNSLOOKUP処理 """
     if not domain:
         return "エラー: ドメイン名を入力してください。"
     output = []
@@ -51,6 +51,7 @@ def nslookup_py(domain, server):
 
 @eel.expose
 def test_port_connection_py(host, port_str):
+    """ 指定されたホストとポートにTCP接続を試みる関数 """
     if not host or not port_str:
         return "エラー: ホストとポート番号の両方を入力してください。"
     try:
@@ -77,18 +78,13 @@ def test_port_connection_py(host, port_str):
     except Exception as e:
         return f"❌ 失敗: 予期せぬエラーが発生しました。\n{type(e).__name__}: {e}"
 
-# --- ここからが追加/変更部分 ---
-
 def close_callback(route, websockets):
-    """
-    ウィンドウが閉じたときに呼び出されるコールバック関数
-    """
+    """ ウィンドウが閉じたときに呼び出されるコールバック関数 """
     if not websockets:
         print('ブラウザが閉じられました。アプリケーションを終了します。')
         sys.exit()
 
 # アプリケーションを開始
 print("アプリケーションを起動しています...")
-# eel.startの戻り値を受け取り、close_callbackを渡す
 eel.start('index.html', size=(700, 750), port=8080, close_callback=close_callback)
 print("アプリケーションを終了しました。")
