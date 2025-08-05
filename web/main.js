@@ -34,13 +34,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     dnsSelect.addEventListener('change', () => {
         customDnsInput.style.display = (dnsSelect.value === 'custom') ? 'block' : 'none';
     });
-
-    // 最前面表示トグルスイッチの処理
-    const onTopCheckbox = document.getElementById('always-on-top-checkbox');
-    onTopCheckbox.addEventListener('change', () => {
-        const isChecked = onTopCheckbox.checked;
-        eel.set_always_on_top(isChecked)();
-    });
 });
 
 

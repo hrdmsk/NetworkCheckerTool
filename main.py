@@ -6,9 +6,6 @@ import subprocess     # pingやtracertなどのOSコマンドを実行するた�
 import locale         # OSの標準文字コードを取得し、コマンド結果の文字化けを防ぐために使用
 import json           # DNSサーバーのリストを記述したJSONファイルを読み込むために使用
 import os             # ファイルパスを解決するためにインポート
-import time           # 処理を一時停止(sleep)するために使用
-import win32gui       # WindowsのGUIウィンドウを操作するためのライブラリ
-import win32con       # win32guiで使う定数を定義したモジュール
 
 def resource_path(relative_path):
     """
@@ -16,37 +13,16 @@ def resource_path(relative_path):
     リソースへの正しいパスを取得します。
     """
     if hasattr(sys, '_MEIPASS'):
+        # PyInstallerによって作成された一時フォルダからパスを取得
         base_path = sys._MEIPASS
     else:
+        # スクリプトとして実行されている場合は、カレントディレクトリからのパス
         base_path = os.path.abspath(".")
+
     return os.path.join(base_path, relative_path)
 
 # Eelを初期化
 eel.init('web')
-
-# ウィンドウハンドルを格納するためのグローバル変数
-hwnd = 0
-
-@eel.expose
-def set_always_on_top(is_top):
-    """ ウィンドウを最前面に表示、または解除する """
-    global hwnd
-    if hwnd == 0:
-        print("ウィンドウハンドルが見つかりません。")
-        return
-
-    try:
-        if is_top:
-            # 最前面に設定
-            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-            print("ウィンドウを最前面に設定しました。")
-        else:
-            # 最前面を解除
-            win32gui.SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-            print("ウィンドウの最前面表示を解除しました。")
-    except Exception as e:
-        print(f"ウィンドウの最前面設定中にエラーが発生しました: {e}")
-
 
 @eel.expose
 def get_dns_servers():
@@ -62,10 +38,15 @@ def get_dns_servers():
 
 @eel.expose
 def nslookup_py(domain, server):
+    """
+    JavaScriptから呼び出されるNSLOOKUP処理。
+    """
     if not domain:
         return {'error': "ドメイン名を入力してください。"}
+    
     results = []
     resolver = dns.resolver.Resolver()
+    
     if server:
         try:
             server_ip = socket.gethostbyname(server)
@@ -74,7 +55,9 @@ def nslookup_py(domain, server):
             return {'error': f"DNSサーバーのホスト名 '{server}' を解決できませんでした。"}
         except Exception as e:
             return {'error': f"無効なDNSサーバーです。\n{e}"}
+    
     record_types = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SOA', 'CAA', 'DS', 'DNSKEY']
+    
     for r_type in record_types:
         record_data = {'type': r_type, 'records': []}
         try:
@@ -89,7 +72,9 @@ def nslookup_py(domain, server):
             return {'error': f"ドメイン '{domain}' が存在しません。"}
         except Exception as e:
             record_data['status'] = f"クエリ失敗: {e}"
+        
         results.append(record_data)
+        
     return results
 
 @eel.expose
@@ -121,10 +106,12 @@ def test_port_connection_py(host, port_str):
         return f"❌ 失敗: 予期せぬエラーが発生しました。\n{type(e).__name__}: {e}"
 
 def run_command(command):
+    """ subprocessでコマンドを実行する共通関数 (Windows専用) """
     try:
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = subprocess.SW_HIDE
+
         result = subprocess.run(
             command,
             capture_output=True,
@@ -141,6 +128,7 @@ def run_command(command):
 
 @eel.expose
 def ping_py(host):
+    """ Pingを実行する (Windows専用) """
     if not host:
         return "エラー: ホストを入力してください。"
     command = ['ping', '-n', '4', host]
@@ -148,6 +136,7 @@ def ping_py(host):
 
 @eel.expose
 def traceroute_py(host):
+    """ Tracerouteを実行する (Windows専用) """
     if not host:
         return "エラー: ホストを入力してください。"
     command = ['tracert', host]
@@ -159,19 +148,5 @@ def close_callback(route, websockets):
         sys.exit()
 
 print("アプリケーションを起動しています...")
-eel.start('index.html', size=(700, 750), port=8080, close_callback=close_callback, block=False)
-
-start_time = time.time()
-while hwnd == 0 and time.time() - start_time < 5:
-    # 【修正点】HTMLの<title>タグと完全に一致させます
-    hwnd = win32gui.FindWindow(None, "レンタルサーバ確認ツール")
-    time.sleep(0.1)
-
-if hwnd:
-    print(f"ウィンドウハンドルを取得しました: {hwnd}")
-    set_always_on_top(True)
-else:
-    print("警告: ウィンドウハンドルを取得できませんでした。最前面表示機能は無効です。")
-
-while True:
-    eel.sleep(1.0)
+eel.start('index.html', size=(700, 750), port=8080, close_callback=close_callback)
+print("アプリケーションを終了しました。")
