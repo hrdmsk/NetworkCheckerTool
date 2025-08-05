@@ -8,7 +8,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>レンタルサーバ確認ツール 🛠️</h1>
+        <div class="header-container">
+            <h1>レンタルサーバ確認ツール 🛠️</h1>
+            <div class="top-most-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="always-on-top-checkbox" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">常に最前面</span>
+            </div>
+        </div>
         <div class="tab-buttons">
             <button class="tab-button active" onclick="showTab('nslookup')">NSLOOKUP</button>
             <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
@@ -22,7 +31,6 @@
             <input type="text" id="domain" value="google.com">
             <label for="dns-server-select"><b>DNSサーバー:</b></label>
             <select id="dns-server-select">
-                <!-- JavaScriptによって動的にオプションが追加される -->
                 <option value="">システムのデフォルト</option>
                 <option value="custom">カスタム...</option>
             </select>

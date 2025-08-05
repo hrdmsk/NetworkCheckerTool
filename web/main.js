@@ -22,20 +22,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             const option = document.createElement('option');
             option.value = server.ip;
             option.textContent = `${server.name} (${server.ip})`;
-            // Googleをデフォルトで選択状態にする
             if (server.name === 'Google') {
                 option.selected = true;
             }
-            // 「カスタム」オプションの直前に挿入
             dnsSelect.insertBefore(option, dnsSelect.querySelector('option[value="custom"]'));
         });
     } catch (error) {
         console.error("DNSサーバーリストの読み込みに失敗しました:", error);
     }
 
-    // プルダウンメニューの値が変更されたときの処理
     dnsSelect.addEventListener('change', () => {
         customDnsInput.style.display = (dnsSelect.value === 'custom') ? 'block' : 'none';
+    });
+
+    // 最前面表示トグルスイッチの処理
+    const onTopCheckbox = document.getElementById('always-on-top-checkbox');
+    onTopCheckbox.addEventListener('change', () => {
+        const isChecked = onTopCheckbox.checked;
+        eel.set_always_on_top(isChecked)();
     });
 });
 

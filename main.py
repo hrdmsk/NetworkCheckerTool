@@ -159,22 +159,19 @@ def close_callback(route, websockets):
         sys.exit()
 
 print("アプリケーションを起動しています...")
-# block=Falseで非ブロッキングモードで開始
 eel.start('index.html', size=(700, 750), port=8080, close_callback=close_callback, block=False)
 
-# ウィンドウハンドルを取得し、デフォルトで最前面に設定
-# ウィンドウが表示されるまで最大5秒待つ
 start_time = time.time()
 while hwnd == 0 and time.time() - start_time < 5:
-    hwnd = win32gui.FindWindow(None, "レンタルサーバ簡易確認ツール")
+    # 【修正点】HTMLの<title>タグと完全に一致させます
+    hwnd = win32gui.FindWindow(None, "レンタルサーバ確認ツール")
     time.sleep(0.1)
 
 if hwnd:
     print(f"ウィンドウハンドルを取得しました: {hwnd}")
-    set_always_on_top(True) # デフォルトで最前面に
+    set_always_on_top(True)
 else:
     print("警告: ウィンドウハンドルを取得できませんでした。最前面表示機能は無効です。")
 
-# メインプロセスを維持するためのループ
 while True:
     eel.sleep(1.0)
