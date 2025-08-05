@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>レンタルサーバ簡易確認ツール</title>
-    <!-- 外部CSSファイルを読み込む -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>レンタルサーバ簡易確認ツール 🛠️</h1>
+        <h1>レンタルサーバ確認ツール 🛠️</h1>
         <div class="tab-buttons">
             <button class="tab-button active" onclick="showTab('nslookup')">NSLOOKUP</button>
             <button class="tab-button" onclick="showTab('portcheck')">ポート接続確認</button>
@@ -23,10 +22,8 @@
             <input type="text" id="domain" value="google.com">
             <label for="dns-server-select"><b>DNSサーバー:</b></label>
             <select id="dns-server-select">
+                <!-- JavaScriptによって動的にオプションが追加される -->
                 <option value="">システムのデフォルト</option>
-                <option value="8.8.8.8" selected>Google (8.8.8.8)</option>
-                <option value="1.1.1.1">Cloudflare (1.1.1.1)</option>
-                <option value="208.67.222.222">OpenDNS (208.67.222.222)</option>
                 <option value="custom">カスタム...</option>
             </select>
             <input type="text" id="custom-dns-server" placeholder="カスタムDNSサーバーのIP or ドメイン名を入力" style="display: none; margin-top: -10px; margin-bottom: 15px;">

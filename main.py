@@ -3,10 +3,22 @@ import dns.resolver
 import socket
 import sys
 import subprocess
-import locale # 文字化け対策のためにインポート
+import locale
+import json # JSONファイルを扱うためにインポート
 
 # Eelを初期化
 eel.init('web')
+
+@eel.expose
+def get_dns_servers():
+    """ web/dns_servers.jsonを読み込んで、サーバーのリストを返す """
+    try:
+        with open('web/dns_servers.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return [] # ファイルが見つからない場合は空のリストを返す
+    except json.JSONDecodeError:
+        return [] # JSONの形式が正しくない場合は空のリストを返す
 
 @eel.expose
 def nslookup_py(domain, server):
@@ -82,7 +94,6 @@ def test_port_connection_py(host, port_str):
 def run_command(command):
     """ subprocessでコマンドを実行する共通関数 (Windows専用) """
     try:
-        # コマンドプロンプトウィンドウを表示しないようにする
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = subprocess.SW_HIDE
@@ -91,7 +102,6 @@ def run_command(command):
             command,
             capture_output=True,
             text=True,
-            # 【修正点】OSの標準エンコーディングで結果を読み取る
             encoding=locale.getpreferredencoding(),
             errors='ignore',
             startupinfo=startupinfo

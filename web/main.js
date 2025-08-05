@@ -1,6 +1,5 @@
 /**
  * 指定されたタブを表示し、他を非表示にする関数
- * @param {string} tabName - 表示するタブの名前 ('nslookup', 'portcheck', 'ping', 'traceroute')
  */
 function showTab(tabName) {
     const contents = document.querySelectorAll('.tab-content');
@@ -12,13 +11,34 @@ function showTab(tabName) {
 }
 
 // ページの読み込みが完了したら、イベントリスナーを設定
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const dnsSelect = document.getElementById('dns-server-select');
     const customDnsInput = document.getElementById('custom-dns-server');
+
+    // DNSサーバーのプルダウンメニューを動的に生成
+    try {
+        const servers = await eel.get_dns_servers()();
+        servers.forEach(server => {
+            const option = document.createElement('option');
+            option.value = server.ip;
+            option.textContent = `${server.name} (${server.ip})`;
+            // Googleをデフォルトで選択状態にする
+            if (server.name === 'Google') {
+                option.selected = true;
+            }
+            // 「カスタム」オプションの直前に挿入
+            dnsSelect.insertBefore(option, dnsSelect.querySelector('option[value="custom"]'));
+        });
+    } catch (error) {
+        console.error("DNSサーバーリストの読み込みに失敗しました:", error);
+    }
+
+    // プルダウンメニューの値が変更されたときの処理
     dnsSelect.addEventListener('change', () => {
         customDnsInput.style.display = (dnsSelect.value === 'custom') ? 'block' : 'none';
     });
 });
+
 
 /**
  * NSLOOKUPを実行する非同期関数
