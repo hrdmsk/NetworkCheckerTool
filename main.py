@@ -15,12 +15,21 @@ def nslookup_py(domain, server):
     resolver = dns.resolver.Resolver()
     if server:
         try:
-            resolver.nameservers = [server]
-            output.append(f"DNSサーバー: {server}")
+            # 指定されたサーバーがドメイン名の場合、IPアドレスに解決する
+            server_ip = socket.gethostbyname(server)
+            resolver.nameservers = [server_ip]
+            # 元の入力と解決後のIPを両方表示して分かりやすくする
+            if server != server_ip:
+                output.append(f"DNSサーバー: {server} ({server_ip})")
+            else:
+                output.append(f"DNSサーバー: {server}")
+        except socket.gaierror:
+            return f"エラー: DNSサーバーのホスト名 '{server}' を解決できませんでした。"
         except Exception as e:
             return f"エラー: 無効なDNSサーバーです。\n{e}"
     else:
         output.append("DNSサーバー: システムのデフォルト設定")
+
     output.append("----------------------------------------\n")
     record_types = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SOA', 'CAA', 'DS', 'DNSKEY']
     for r_type in record_types:
