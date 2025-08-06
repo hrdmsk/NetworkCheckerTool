@@ -11,12 +11,10 @@
         <h1>レンタルサーバ確認ツール 🛠️</h1>
         <!-- Tab Navigation -->
         <div class="tab-buttons">
-            <!-- Main Tabs -->
             <button class="tab-button active" data-tab="nslookup">NSLOOKUP</button>
             <button class="tab-button" data-tab="portcheck">ポート接続確認</button>
             <button class="tab-button" data-tab="emailauth">メール認証</button>
             <button class="tab-button" data-tab="whois">Whois</button>
-            <!-- Dropdown Menu -->
             <div class="dropdown">
                 <button class="tab-button" id="dropdown-btn">その他ツール ▼</button>
                 <div class="dropdown-content" id="dropdown-menu">
@@ -46,8 +44,24 @@
             <h2>ポート接続確認 (TCP)</h2>
             <label for="portcheck-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
             <input type="text" id="portcheck-host" value="google.com">
-            <label for="portcheck-port"><b>ポート番号:</b></label>
-            <input type="text" id="portcheck-port" value="443">
+            
+            <label for="portcheck-port-select"><b>ポート番号:</b></label>
+            <select id="portcheck-port-select">
+                <option value="21">21 (FTP)</option>
+                <option value="22">22 (SSH)</option>
+                <option value="25">25 (SMTP)</option>
+                <option value="80">80 (HTTP)</option>
+                <option value="110">110 (POP3)</option>
+                <option value="143">143 (IMAP)</option>
+                <option value="443">443 (HTTPS)</option>
+                <option value="465">465 (SMTPS)</option>
+                <option value="587">587 (Submission)</option>
+                <option value="993">993 (IMAPS)</option>
+                <option value="995">995 (POP3S)</option>
+                <option value="custom" selected>カスタム...</option>
+            </select>
+            <input type="text" id="portcheck-port-custom" placeholder="ポート番号を入力" style="display: block; margin-top: 10px;">
+
             <button onclick="startPortCheck()">接続テスト実行</button>
             <h3>結果:</h3>
             <pre id="portcheck-results" class="result-display">ここに接続テストの結果が表示されます...</pre>
@@ -85,16 +99,41 @@
             <label for="emailauth-domain"><b>ドメイン名:</b></label>
             <input type="text" id="emailauth-domain" value="google.com">
             <label for="dkim-selector"><b>DKIMセレクタ (任意):</b></label>
-            <input type="text" id="dkim-selector" placeholder="例: google, default, s1">
+            <input type="text" id="dkim-selector" placeholder="例: google, default (空欄で一般的な候補を検索)">
+            
+            <div class="advanced-settings">
+                <button type="button" id="toggle-advanced-dkim" class="advanced-toggle-btn">高度な設定 ▼</button>
+                <div id="advanced-dkim-options" class="advanced-options-container">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="yyyymmdd-dkim-check">
+                        <label for="yyyymmdd-dkim-check">YYYYMMDD 形式 (2015年まで)</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="rs-yyyymmdd-dkim-check">
+                        <label for="rs-yyyymmdd-dkim-check">rsYYYYMMDD 形式 (2015年まで)</label>
+                    </div>
+                </div>
+            </div>
+
             <button onclick="startEmailAuthCheck()">認証レコード確認</button>
             <h3>結果:</h3>
             <div id="emailauth-results">ここに結果が表示されます...</div>
+            <div id="checked-selectors-container" style="display: none; margin-top: 20px;">
+                <h4>確認したセレクタ候補:</h4>
+                <div id="checked-selectors-summary" class="result-display" style="min-height: auto; padding: 10px; font-size: 14px;"></div>
+            </div>
+            <div id="dkim-progress-container" style="display: none; margin-top: 15px;">
+                <div class="progress-bar">
+                    <div id="dkim-progress-bar" class="progress-bar-inner"></div>
+                </div>
+                <div id="dkim-progress-text" style="font-size: 14px; text-align: center; margin-top: 5px;"></div>
+                <button id="cancel-dkim-btn" style="background-color: #dc3545; margin-top: 10px;">キャンセル</button>
+            </div>
         </div>
     </div>
     <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript" src="anime.js"></script>
     <script type="text/javascript" src="main.js"></script>
-
-    <!-- ローディングアニメーション用のオーバーレイ -->
     <div id="loader-overlay">
         <div class="loader"></div>
         <div class="loader-text">処理中...</div>

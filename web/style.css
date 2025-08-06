@@ -19,15 +19,8 @@ h1, h2 {
     margin-bottom: 1em;
 }
 
-h1 {
-    font-size: 1.8em;
-}
-
-h2 {
-    font-size: 1.4em;
-    margin-top: 1.5em;
-}
-
+h1 { font-size: 1.8em; }
+h2 { font-size: 1.4em; margin-top: 1.5em; }
 
 /* --- タブとドロップダウンのスタイル --- */
 .tab-buttons {
@@ -54,23 +47,12 @@ h2 {
     color: #007bff;
 }
 
-.tab-content {
-    display: none;
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-.tab-content.active {
-    display: block;
-}
-
-/* ドロップダウンのコンテナ */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-/* ドロップダウンの中身 (最初は非表示) */
+.dropdown { position: relative; display: inline-block; }
 .dropdown-content {
-    display: none; /* JSで表示を切り替える */
+    display: none;
     position: absolute;
     background-color: #fff;
     min-width: 160px;
@@ -80,27 +62,15 @@ h2 {
     z-index: 1;
     margin-top: 5px;
 }
-
-/* ドロップダウン内のリンク */
 .dropdown-content a {
     color: #333;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    text-align: left;
     font-size: 15px;
 }
-
-/* ドロップダウン内のリンクにホバーした時のスタイル */
-.dropdown-content a:hover {
-    background-color: #f4f4f9;
-}
-
-/* JavaScriptで表示を切り替えるためのクラス */
-.dropdown-content.show {
-    display: block;
-}
-
+.dropdown-content a:hover { background-color: #f4f4f9; }
+.dropdown-content.show { display: block; }
 
 /* --- フォーム要素のスタイル --- */
 label {
@@ -110,15 +80,18 @@ label {
     color: #555;
 }
 
-input[type="text"],
-select {
+input[type="text"], select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    background-color: white;
+}
+
+optgroup {
+    font-weight: bold;
+    font-style: italic;
 }
 
 button {
@@ -134,14 +107,56 @@ button {
     transition: background-color 0.2s;
     margin-top: 10px;
 }
+button:hover { background-color: #0056b3; }
 
-button:hover {
-    background-color: #0056b3;
+/* --- ★追加: 高度な設定とチェックボックスのスタイル --- */
+.advanced-settings {
+    margin-bottom: 15px;
+}
+.advanced-toggle-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px 0;
+    width: auto;
+    display: inline-block;
+    margin-top: 0;
+}
+.advanced-toggle-btn:hover {
+    text-decoration: underline;
+}
+.advanced-options-container {
+    display: none; /* JSで表示を切り替える */
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    margin-top: 5px;
+}
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+.checkbox-container:not(:last-child) {
+    margin-bottom: 10px;
+}
+.checkbox-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+.checkbox-container label {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 14px;
+    color: #495057;
 }
 
+
 /* --- 結果表示エリアのスタイル --- */
-pre,
-.result-display {
+pre, .result-display {
     white-space: pre-wrap;
     word-wrap: break-word;
     font-family: "Courier New", Courier, monospace;
@@ -153,10 +168,7 @@ pre,
     border: 1px solid #ddd;
 }
 
-#nslookup-results,
-#emailauth-results {
-    margin-top: 1.5em;
-}
+#nslookup-results, #emailauth-results { margin-top: 1.5em; }
 
 .result-card {
     background-color: #fff;
@@ -164,31 +176,17 @@ pre,
     border-radius: 8px;
     margin-bottom: 1em;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* 角丸を維持するため */
+    overflow: hidden;
 }
-
 .result-header {
     background-color: #f7f7f7;
     padding: 10px 15px;
     font-weight: bold;
     border-bottom: 1px solid #ddd;
 }
-
-.result-body {
-    padding: 15px;
-    font-family: "Courier New", Courier, monospace;
-    line-height: 1.6;
-}
-
-.result-body p {
-    margin: 0 0 5px 0;
-}
-
-.status-message {
-    color: #6c757d;
-    font-style: italic;
-}
-
+.result-body { padding: 15px; line-height: 1.6; }
+.result-body p { margin: 0 0 5px 0; }
+.status-message { color: #6c757d; font-style: italic; }
 .error-message {
     color: #dc3545;
     font-weight: bold;
@@ -198,30 +196,26 @@ pre,
     border-radius: 5px;
 }
 
-/* --- ローディングアニメーションのスタイル --- */
+/* --- ローディングと進捗バーのスタイル --- */
 #loader-overlay {
-    position: fixed; /* 画面全体を覆う */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.7); /* 半透明の白 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
     z-index: 9999;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    /* 初期状態では非表示 */
-    display: none;
 }
 
 .loader {
-    border: 5px solid #f3f3f3; /* ローダーの円（薄い灰色） */
-    border-top: 5px solid #007bff; /* ローダーの回転部分（青色） */
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
     border-radius: 50%;
     width: 50px;
     height: 50px;
-    animation: spin 1s linear infinite; /* spinアニメーションを1秒で無限に繰り返す */
+    animation: spin 1s linear infinite;
 }
 
 .loader-text {
@@ -231,8 +225,21 @@ pre,
     font-size: 1.2em;
 }
 
-/* 円を回転させるためのアニメーション定義 */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    height: 10px;
+    overflow: hidden;
+}
+.progress-bar-inner {
+    height: 100%;
+    width: 0%;
+    background-color: #007bff;
+    transition: width 0.2s ease-in-out;
 }
