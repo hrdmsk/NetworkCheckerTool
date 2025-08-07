@@ -228,6 +228,16 @@ pre, .result-display {
     border-radius: 5px;
 }
 
+/* Whois結果のハイライト用スタイル */
+.highlight-yellow {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+.highlight-green {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
 /* --- ローディングと進捗バーのスタイル --- */
 #loader-overlay {
     position: fixed;
