@@ -1,5 +1,4 @@
 eel
 dnspython
-python-whois
 pyinstaller
 aiodns

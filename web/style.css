@@ -109,7 +109,7 @@ button {
 }
 button:hover { background-color: #0056b3; }
 
-/* --- ★追加: 高度な設定とチェックボックスのスタイル --- */
+/* --- 高度な設定とチェックボックスのスタイル --- */
 .advanced-settings {
     margin-bottom: 15px;
 }
@@ -128,7 +128,7 @@ button:hover { background-color: #0056b3; }
     text-decoration: underline;
 }
 .advanced-options-container {
-    display: none; /* JSで表示を切り替える */
+    display: none;
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 5px;
@@ -242,4 +242,14 @@ pre, .result-display {
     width: 0%;
     background-color: #007bff;
     transition: width 0.2s ease-in-out;
+}
+
+/* ★追加: Whoisの強調表示スタイル */
+.highlight-yellow {
+    color: #b45309; /* 濃い黄色 */
+    font-weight: bold;
+}
+.highlight-green {
+    color: #047857; /* 濃い緑色 */
+    font-weight: bold;
 }

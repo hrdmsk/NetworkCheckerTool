@@ -46,19 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-
-    // --- 高度な設定の開閉ロジック ---
-    const toggleBtn = document.getElementById('toggle-advanced-dkim');
-    const advancedOptions = document.getElementById('advanced-dkim-options');
-    if (toggleBtn && advancedOptions) {
-        toggleBtn.addEventListener('click', () => {
-            const isHidden = advancedOptions.style.display === 'none' || advancedOptions.style.display === '';
-            advancedOptions.style.display = isHidden ? 'block' : 'none';
-            toggleBtn.textContent = isHidden ? '高度な設定 ▲' : '高度な設定 ▼';
-        });
-    }
-
-
     // --- DNSサーバーリストの読み込み ---
     const dnsSelect = document.getElementById('dns-server-select');
     const customDnsInput = document.getElementById('custom-dns-server');
@@ -97,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     
-    // --- ★追加: ポート番号のドロップダウン制御 ---
+    // --- ポート番号のドロップダウン制御 ---
     const portSelect = document.getElementById('portcheck-port-select');
     const customPortInput = document.getElementById('portcheck-port-custom');
     if (portSelect && customPortInput) {
@@ -177,7 +164,6 @@ async function startPortCheck() {
     const host = document.getElementById('portcheck-host').value;
     const resultsDiv = document.getElementById('portcheck-results');
     
-    // ★変更: ドロップダウンからポート番号を取得
     const portSelect = document.getElementById('portcheck-port-select');
     let port = portSelect.value;
     if (port === 'custom') {
@@ -272,7 +258,7 @@ async function startWhois() {
     
     try {
         const resultText = await eel.whois_py(target)();
-        resultsDiv.textContent = resultText;
+        resultsDiv.innerHTML = formatWhoisForDisplay(resultText);
     } catch (error) {
         resultsDiv.textContent = 'アプリケーションでエラーが発生しました。\n' + error;
         console.error(error);
@@ -282,13 +268,40 @@ async function startWhois() {
 }
 
 /**
+ * ★追加: Whoisの結果を色分けするヘルパー関数
+ */
+function formatWhoisForDisplay(text) {
+    const escapeHtml = (unsafe) => 
+        unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    const lines = text.split('\n');
+    const formattedLines = lines.map(line => {
+        const escapedLine = escapeHtml(line);
+        if (escapedLine.match(/Name Server|ネームサーバ/i)) {
+            return `<span class="highlight-yellow">${escapedLine}</span>`;
+        }
+        if (escapedLine.match(/Creation Date|Created|登録年月日|作成日/i)) {
+            return `<span class="highlight-green">${escapedLine}</span>`;
+        }
+        if (escapedLine.match(/Updated Date|Last Update|最終更新日/i)) {
+            return `<span class="highlight-green">${escapedLine}</span>`;
+        }
+        return escapedLine;
+    });
+    return formattedLines.join('\n');
+}
+
+/**
  * メール認証レコードを検索する非同期関数
  */
 async function startEmailAuthCheck() {
     const domain = document.getElementById('emailauth-domain').value;
     const selector = document.getElementById('dkim-selector').value;
-    const performYYYYMMDD = document.getElementById('yyyymmdd-dkim-check').checked;
-    const performRsYYYYMMDD = document.getElementById('rs-yyyymmdd-dkim-check').checked;
     const resultsDiv = document.getElementById('emailauth-results');
     const selectorContainer = document.getElementById('checked-selectors-container');
     
@@ -300,12 +313,9 @@ async function startEmailAuthCheck() {
     resultsDiv.innerHTML = '';
     selectorContainer.style.display = 'none';
     document.getElementById('dkim-progress-container').style.display = 'block';
-    
-    document.getElementById('cancel-dkim-btn').onclick = () => {
-        eel.cancel_dkim_check()();
-    };
 
-    eel.check_email_auth_py(domain, selector, performYYYYMMDD, performRsYYYYMMDD)();
+    // ★修正: 日付セレクタの引数を削除
+    eel.check_email_auth_py(domain, selector)();
 }
 
 eel.expose(update_dkim_progress, 'update_dkim_progress');
@@ -323,7 +333,7 @@ function finish_auth_check(response) {
     document.getElementById('dkim-progress-container').style.display = 'none';
     const resultsDiv = document.getElementById('emailauth-results');
     const selectorContainer = document.getElementById('checked-selectors-container');
-    const selectorSummaryDiv = document.getElementById('checked-selectors-summary');
+    const selectorListDiv = document.getElementById('checked-selectors-list');
 
     if (response.error) {
         resultsDiv.innerHTML = `<div class="error-message">${response.error}</div>`;
@@ -331,7 +341,7 @@ function finish_auth_check(response) {
     }
 
     const results = response.results;
-    const selector_summary = response.checked_selectors_summary;
+    const checked_selectors = response.checked_selectors;
 
     results.forEach(item => {
         const card = document.createElement('div');
@@ -362,8 +372,8 @@ function finish_auth_check(response) {
         resultsDiv.appendChild(card);
     });
 
-    if (selector_summary) {
+    if (checked_selectors && checked_selectors.length > 0) {
         selectorContainer.style.display = 'block';
-        selectorSummaryDiv.textContent = selector_summary;
+        selectorListDiv.textContent = checked_selectors.join(', ');
     }
 }

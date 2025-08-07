@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['main.py', 'dkim_checker.py'],
+    ['main.py', 'dkim_checker.py', 'whois_checker.py'],
     pathex=[],
     binaries=[],
-    datas=[('web', 'web'), ('.venv\\lib\\site-packages\\whois\\data', 'whois/data')],
-    hiddenimports=['whois._1_query', 'aiodns', 'pycares'],
+    datas=[('web', 'web')],
+    hiddenimports=['aiodns', 'pycares'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

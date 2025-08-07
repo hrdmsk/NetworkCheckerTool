@@ -1,13 +1,15 @@
 @echo off
+set APP_NAME=RentalServerChecker
+
 echo ===================================
-echo  RentalServerChecker - コンパイル開始
+echo  %APP_NAME% - Compiling Start
 echo ===================================
 
-pyinstaller --name "RentalServerChecker" --onefile --windowed --add-data "web;web" --add-data ".venv\lib\site-packages\whois\data;whois/data" --hidden-import=whois._1_query --hidden-import=aiodns --hidden-import=pycares main.py dkim_checker.py
+pyinstaller --name "%APP_NAME%" --onefile --windowed --add-data "web;web" --hidden-import=aiodns --hidden-import=pycares main.py dkim_checker.py whois_checker.py
 
 echo.
 echo ===================================
-echo  コンパイル完了
+echo  Compiling Completion
 echo ===================================
 echo.
 pause

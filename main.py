@@ -4,7 +4,7 @@ import socket
 import sys
 import subprocess
 import locale
-import whois
+import whois_checker
 import dkim_checker
 import threading
 import asyncio
@@ -15,8 +15,9 @@ from datetime import datetime
 # Eelを初期化
 eel.init('web')
 
-dkim_cancel_event = threading.Event()
-dkim_thread = None # ★追加: 実行中のスレッドを管理する変数
+# 日付セレクタ関連の変数を削除
+# dkim_cancel_event = threading.Event()
+# dkim_thread = None
 
 def get_public_dns_servers():
     """
@@ -180,123 +181,75 @@ def traceroute_py(host):
 def whois_py(query):
     if not query:
         return "エラー: ドメイン名またはIPアドレスを入力してください。"
-    try:
-        w = whois.whois(query)
-        return w.text if hasattr(w, 'text') else str(w)
-    except Exception as e:
-        return f"Whois情報の取得中にエラーが発生しました:\n{e}"
+    return whois_checker.get_whois_info(query)
 
 @eel.expose
-def check_email_auth_py(domain, dkim_selector, perform_yyyymmdd_check, perform_rs_yyyymmdd_check):
+def check_email_auth_py(domain, dkim_selector): # 引数を2つに変更
     """
     メール認証の確認を別スレッドで開始する。
-    実行中の古いスレッドがあれば、キャンセルしてから新しいスレッドを開始する。
     """
-    global dkim_thread
-    
-    # 既にスレッドが実行中であれば、キャンセルシグナルを送って終了を待つ
-    if dkim_thread and dkim_thread.is_alive():
-        print("INFO: Previous DKIM check is running. Cancelling it...")
-        dkim_cancel_event.set()
-        dkim_thread.join() # 古いスレッドが終了するのを待つ
-        print("INFO: Previous DKIM check cancelled.")
-
-    dkim_cancel_event.clear()
-    dkim_thread = threading.Thread(target=run_auth_check, args=(domain, dkim_selector, perform_yyyymmdd_check, perform_rs_yyyymmdd_check))
-    dkim_thread.start()
+    # 日付セレクタ関連のスレッド管理を削除
+    thread = threading.Thread(target=run_auth_check, args=(domain, dkim_selector))
+    thread.start()
     return {'status': 'started'}
 
-@eel.expose
-def cancel_dkim_check():
-    """フロントエンドからキャンセル指令を受け取る"""
-    print("INFO: Received cancel signal from frontend.")
-    dkim_cancel_event.set()
+# 日付セレクタ関連の関数を削除
+# @eel.expose
+# def cancel_dkim_check(): ...
+# def summarize_selectors(selector_list): ...
 
-def summarize_selectors(selector_list):
-    """確認したセレクタのリストを要約して文字列を返す"""
-    if not selector_list:
-        return ""
-
-    date_selectors = []
-    other_selectors = []
-    
-    for s in selector_list:
-        clean_s = s[2:] if s.startswith('rs') else s
-        if clean_s.isdigit() and len(clean_s) == 8:
-            try:
-                datetime.strptime(clean_s, '%Y%m%d')
-                date_selectors.append(clean_s)
-            except ValueError:
-                other_selectors.append(s)
-        else:
-            other_selectors.append(s)
-            
-    summary_parts = []
-    if date_selectors:
-        date_selectors.sort()
-        start_date = date_selectors[0]
-        end_date = date_selectors[-1]
-        summary_parts.append(f"日付セレクタ範囲: {start_date} ～ {end_date}")
-
-    if other_selectors:
-        summary_parts.append(f"その他: {', '.join(other_selectors)}")
-        
-    return " | ".join(summary_parts)
-
-def run_auth_check(domain, dkim_selector, perform_yyyymmdd_check, perform_rs_yyyymmdd_check):
+def run_auth_check(domain, dkim_selector): # 引数を2つに変更
     """
     実際の認証チェック処理。この関数がバックグラウンドで動く。
     """
-    results = []
-    resolver = dns.resolver.Resolver()
-    
-    # SPFレコードの検索
-    spf_data = {'type': 'SPF', 'records': []}
     try:
-        answers = resolver.resolve(domain, 'TXT')
-        for rdata in answers:
-            if 'v=spf1' in rdata.to_text().lower():
-                spf_data['records'].append(rdata.to_text().strip('"'))
-        if not spf_data['records']:
-            spf_data['status'] = "レコードが見つかりませんでした。"
-    except Exception as e:
-        spf_data['status'] = f"クエリ失敗: {e}"
-    results.append(spf_data)
+        results = []
+        resolver = dns.resolver.Resolver()
+        
+        # SPFレコードの検索
+        spf_data = {'type': 'SPF', 'records': []}
+        try:
+            answers = resolver.resolve(domain, 'TXT')
+            for rdata in answers:
+                if 'v=spf1' in rdata.to_text().lower():
+                    spf_data['records'].append(rdata.to_text().strip('"'))
+            if not spf_data['records']:
+                spf_data['status'] = "レコードが見つかりませんでした。"
+        except Exception as e:
+            spf_data['status'] = f"クエリ失敗: {e}"
+        results.append(spf_data)
 
-    # DMARCレコードの検索
-    dmarc_data = {'type': 'DMARC', 'records': []}
-    try:
-        answers = resolver.resolve(f'_dmarc.{domain}', 'TXT')
-        for rdata in answers:
-            if 'v=dmarc1' in rdata.to_text().lower():
-                dmarc_data['records'].append(rdata.to_text().strip('"'))
-        if not dmarc_data['records']:
-            dmarc_data['status'] = "DMARCレコードが見つかりませんでした。"
-    except Exception as e:
-        dmarc_data['status'] = f"クエリ失敗: {e}"
-    results.append(dmarc_data)
+        # DMARCレコードの検索
+        dmarc_data = {'type': 'DMARC', 'records': []}
+        try:
+            answers = resolver.resolve(f'_dmarc.{domain}', 'TXT')
+            for rdata in answers:
+                if 'v=dmarc1' in rdata.to_text().lower():
+                    dmarc_data['records'].append(rdata.to_text().strip('"'))
+            if not dmarc_data['records']:
+                dmarc_data['status'] = "DMARCレコードが見つかりませんでした。"
+        except Exception as e:
+            dmarc_data['status'] = f"クエリ失敗: {e}"
+        results.append(dmarc_data)
 
-    # DKIMの確認 (非同期処理)
-    try:
+        # DKIMの確認 (非同期処理)
         public_dns_list = get_public_dns_servers()
         if public_dns_list is None:
-            dkim_data = {'type': 'DKIM', 'status': "エラー: dns_servers.jsonが読み込めませんでした。DKIMの確認を中止しました。"}
+            dkim_data = {'type': 'DKIM', 'status': "エラー: dns_servers.jsonが読み込めませんでした。"}
             results.append(dkim_data)
-            eel.finish_auth_check({'results': results, 'checked_selectors_summary': ''})
+            eel.finish_auth_check({'results': results, 'checked_selectors': []})
             return
 
         def update_progress(done, total):
             eel.update_dkim_progress(done, total)
 
+        # 日付セレクタ関連の引数を削除
         dkim_result, checked_selectors = asyncio.run(
             dkim_checker.find_dkim_record_async(
                 domain, 
                 dkim_selector,
                 progress_callback=update_progress,
-                cancel_event=dkim_cancel_event,
-                dns_servers=public_dns_list,
-                perform_yyyymmdd_check=perform_yyyymmdd_check,
-                perform_rs_yyyymmdd_check=perform_rs_yyyymmdd_check
+                dns_servers=public_dns_list
             )
         )
         
@@ -304,8 +257,7 @@ def run_auth_check(domain, dkim_selector, perform_yyyymmdd_check, perform_rs_yyy
         dkim_data.update(dkim_result)
         results.append(dkim_data)
         
-        selector_summary = summarize_selectors(checked_selectors)
-        eel.finish_auth_check({'results': results, 'checked_selectors_summary': selector_summary})
+        eel.finish_auth_check({'results': results, 'checked_selectors': checked_selectors})
 
     except Exception as e:
         print(f"ERROR in auth check thread: {e}")
@@ -318,4 +270,3 @@ def close_callback(route, websockets):
 
 print("アプリケーションを起動しています...")
 eel.start('index.html', size=(700, 800), port=8080, close_callback=close_callback)
-print("アプリケーションを終了しました。")

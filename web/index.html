@@ -44,7 +44,6 @@
             <h2>ポート接続確認 (TCP)</h2>
             <label for="portcheck-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
             <input type="text" id="portcheck-host" value="google.com">
-            
             <label for="portcheck-port-select"><b>ポート番号:</b></label>
             <select id="portcheck-port-select">
                 <option value="21">21 (FTP)</option>
@@ -61,7 +60,6 @@
                 <option value="custom" selected>カスタム...</option>
             </select>
             <input type="text" id="portcheck-port-custom" placeholder="ポート番号を入力" style="display: block; margin-top: 10px;">
-
             <button onclick="startPortCheck()">接続テスト実行</button>
             <h3>結果:</h3>
             <pre id="portcheck-results" class="result-display">ここに接続テストの結果が表示されます...</pre>
@@ -101,33 +99,18 @@
             <label for="dkim-selector"><b>DKIMセレクタ (任意):</b></label>
             <input type="text" id="dkim-selector" placeholder="例: google, default (空欄で一般的な候補を検索)">
             
-            <div class="advanced-settings">
-                <button type="button" id="toggle-advanced-dkim" class="advanced-toggle-btn">高度な設定 ▼</button>
-                <div id="advanced-dkim-options" class="advanced-options-container">
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="yyyymmdd-dkim-check">
-                        <label for="yyyymmdd-dkim-check">YYYYMMDD 形式 (2015年まで)</label>
-                    </div>
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="rs-yyyymmdd-dkim-check">
-                        <label for="rs-yyyymmdd-dkim-check">rsYYYYMMDD 形式 (2015年まで)</label>
-                    </div>
-                </div>
-            </div>
-
             <button onclick="startEmailAuthCheck()">認証レコード確認</button>
             <h3>結果:</h3>
             <div id="emailauth-results">ここに結果が表示されます...</div>
             <div id="checked-selectors-container" style="display: none; margin-top: 20px;">
                 <h4>確認したセレクタ候補:</h4>
-                <div id="checked-selectors-summary" class="result-display" style="min-height: auto; padding: 10px; font-size: 14px;"></div>
+                <div id="checked-selectors-list" class="result-display" style="min-height: auto; padding: 10px; font-size: 14px;"></div>
             </div>
             <div id="dkim-progress-container" style="display: none; margin-top: 15px;">
                 <div class="progress-bar">
                     <div id="dkim-progress-bar" class="progress-bar-inner"></div>
                 </div>
                 <div id="dkim-progress-text" style="font-size: 14px; text-align: center; margin-top: 5px;"></div>
-                <button id="cancel-dkim-btn" style="background-color: #dc3545; margin-top: 10px;">キャンセル</button>
             </div>
         </div>
     </div>
