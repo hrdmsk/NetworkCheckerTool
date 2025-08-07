@@ -22,27 +22,26 @@ body {
 .settings-container {
     display: flex;
     align-items: center;
+    gap: 8px; /* スイッチとラベルの間のスペース */
 }
-.settings-container input[type="checkbox"] {
-    width: auto;
-    margin-right: 5px;
-}
-.settings-container label {
+
+.settings-container label.switch-label {
     font-size: 14px;
     font-weight: normal;
     color: #555;
     margin-bottom: 0;
+    cursor: pointer;
 }
+
 
 h1, h2 {
     color: #333;
     border-bottom: 2px solid #dee2e6;
     padding-bottom: 0.5em;
-    margin-bottom: 1em;
 }
+h1 { font-size: 1.8em; margin-bottom: 0; border-bottom: none; } /* h1のスタイルを調整 */
+h2 { font-size: 1.4em; margin-top: 1.5em; margin-bottom: 1em;}
 
-h1 { font-size: 1.8em; }
-h2 { font-size: 1.4em; margin-top: 1.5em; }
 /* --- スライドボタンのスタイル --- */
 .switch {
   position: relative;
@@ -90,27 +89,39 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-/* --- タブとドロップダウンのスタイル --- */
-.tab-buttons {
-    display: flex;
-    flex-wrap: wrap;
+
+/* --- 結果表示エリアのスタイル --- */
+pre, .result-display, .result-card {
+    user-select: text; /* テキスト選択を可能にする */
+    -webkit-user-select: text; /* Safari用 */
+}
+
+/* --- ★変更: ナビゲーションタブのスタイル --- */
+.tab-nav {
     border-bottom: 2px solid #ccc;
     margin-bottom: 1.5em;
 }
-
-.tab-button {
-    padding: 10px 20px;
+.tab-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+.tab-nav li {
+    position: relative;
+}
+.tab-nav .tab-link {
+    display: block;
+    padding: 8px 16px;
     cursor: pointer;
-    border: none;
-    background-color: transparent;
-    font-size: 16px;
+    font-size: 15px;
     border-bottom: 3px solid transparent;
     color: #555;
-    font-family: inherit;
     font-weight: 500;
+    text-decoration: none;
+    margin-bottom: -2px; /* 下線を親のボーダーに重ねる */
 }
-
-.tab-button.active {
+.tab-nav .tab-link.active {
     border-bottom-color: #007bff;
     color: #007bff;
 }
@@ -118,7 +129,6 @@ input:checked + .slider:before {
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-.dropdown { position: relative; display: inline-block; }
 .dropdown-content {
     display: none;
     position: absolute;
@@ -176,52 +186,6 @@ button {
     margin-top: 10px;
 }
 button:hover { background-color: #0056b3; }
-
-/* --- 高度な設定とチェックボックスのスタイル --- */
-.advanced-settings {
-    margin-bottom: 15px;
-}
-.advanced-toggle-btn {
-    background: none;
-    border: none;
-    color: #007bff;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 5px 0;
-    width: auto;
-    display: inline-block;
-    margin-top: 0;
-}
-.advanced-toggle-btn:hover {
-    text-decoration: underline;
-}
-.advanced-options-container {
-    display: none;
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid #dee2e6;
-    margin-top: 5px;
-}
-.checkbox-container {
-    display: flex;
-    align-items: center;
-}
-.checkbox-container:not(:last-child) {
-    margin-bottom: 10px;
-}
-.checkbox-container input[type="checkbox"] {
-    width: auto;
-    margin-right: 10px;
-    margin-bottom: 0;
-}
-.checkbox-container label {
-    margin-bottom: 0;
-    font-weight: normal;
-    font-size: 14px;
-    color: #495057;
-}
-
 
 /* --- 結果表示エリアのスタイル --- */
 pre, .result-display {
@@ -310,14 +274,4 @@ pre, .result-display {
     width: 0%;
     background-color: #007bff;
     transition: width 0.2s ease-in-out;
-}
-
-/* Whoisの強調表示スタイル */
-.highlight-yellow {
-    color: #b45309; /* 濃い黄色 */
-    font-weight: bold;
-}
-.highlight-green {
-    color: #047857; /* 濃い緑色 */
-    font-weight: bold;
 }

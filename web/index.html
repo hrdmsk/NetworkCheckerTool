@@ -18,19 +18,21 @@
             <label for="on-top-toggle" class="switch-label">常に最前面に表示</label>
         </div>
         <!-- Tab Navigation -->
-        <div class="tab-buttons">
-            <button class="tab-button active" data-tab="nslookup">NSLOOKUP</button>
-            <button class="tab-button" data-tab="portcheck">ポート接続確認</button>
-            <button class="tab-button" data-tab="emailauth">メール認証</button>
-            <button class="tab-button" data-tab="whois">Whois</button>
-            <div class="dropdown">
-                <button class="tab-button" id="dropdown-btn">その他ツール ▼</button>
-                <div class="dropdown-content" id="dropdown-menu">
-                    <a href="#" data-tab="ping">Ping</a>
-                    <a href="#" data-tab="traceroute">Traceroute</a>
-                </div>
-            </div>
-        </div>
+        <nav class="tab-nav">
+            <ul>
+                <li><a href="#" class="tab-link active" data-tab="nslookup">NSLOOKUP</a></li>
+                <li><a href="#" class="tab-link" data-tab="portcheck">ポート接続確認</a></li>
+                <li><a href="#" class="tab-link" data-tab="emailauth">メール認証</a></li>
+                <li><a href="#" class="tab-link" data-tab="whois">Whois</a></li>
+                <li class="dropdown">
+                    <a href="#" class="tab-link" id="dropdown-btn">その他ツール ▼</a>
+                    <div class="dropdown-content" id="dropdown-menu">
+                        <a href="#" data-tab="ping">Ping</a>
+                        <a href="#" data-tab="traceroute">Traceroute</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
 
         <!-- NSLOOKUPタブ -->
         <div id="nslookup-tab" class="tab-content active">

@@ -3,27 +3,32 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- タブとドロップダウンの制御ロジック ---
-    const tabClickables = document.querySelectorAll('[data-tab]');
+    const tabLinks = document.querySelectorAll('.tab-nav .tab-link, .dropdown-content a');
     const contentPanes = document.querySelectorAll('.tab-content');
-    const allTabButtons = document.querySelectorAll('.tab-button');
     const dropdownBtn = document.getElementById('dropdown-btn');
     const dropdownMenu = document.getElementById('dropdown-menu');
 
-    tabClickables.forEach(clickable => {
-        clickable.addEventListener('click', (event) => {
+    tabLinks.forEach(link => {
+        // ドロップダウンの親ボタン自体はタブ切り替えを行わないので除外
+        if (link.id === 'dropdown-btn') return;
+
+        link.addEventListener('click', (event) => {
             event.preventDefault();
-            const tabName = clickable.dataset.tab;
+            const tabName = link.dataset.tab;
 
+            // 全てのコンテンツを非表示にし、全てのリンクのアクティブ状態を解除
             contentPanes.forEach(pane => pane.classList.remove('active'));
-            allTabButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-nav .tab-link').forEach(l => l.classList.remove('active'));
 
+            // 対応するコンテンツを表示
             const activePane = document.getElementById(`${tabName}-tab`);
             if (activePane) { activePane.classList.add('active'); }
 
-            if (clickable.closest('.dropdown-content')) {
+            // クリックされたリンクをアクティブにする
+            if (link.closest('.dropdown-content')) {
                 if(dropdownBtn) dropdownBtn.classList.add('active');
-            } else if(clickable.classList.contains('tab-button')) {
-                clickable.classList.add('active');
+            } else {
+                link.classList.add('active');
             }
 
             if (dropdownMenu) dropdownMenu.classList.remove('show');
@@ -32,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (dropdownBtn) {
         dropdownBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
+            event.preventDefault();
             if (dropdownMenu) dropdownMenu.classList.toggle('show');
         });
     }
