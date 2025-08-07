@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const allTabButtons = document.querySelectorAll('.tab-button');
     const dropdownBtn = document.getElementById('dropdown-btn');
     const dropdownMenu = document.getElementById('dropdown-menu');
+    const onTopToggle = document.getElementById('on-top-toggle');
+    if (onTopToggle) {
+        onTopToggle.addEventListener('change', () => {
+            const isChecked = onTopToggle.checked;
+            window.pywebview.api.toggle_on_top(isChecked);
+        });
+    }
 
     tabClickables.forEach(clickable => {
         clickable.addEventListener('click', (event) => {
@@ -49,6 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- DNSサーバーリストの読み込み ---
     const dnsSelect = document.getElementById('dns-server-select');
     const customDnsInput = document.getElementById('custom-dns-server');
+    const domainInput = document.getElementById('domain');
+    const nslookupBtn = document.getElementById('nslookup-btn');
 
     try {
         const response = await fetch('dns/dns_servers.json');
@@ -57,17 +66,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         const data = await response.json();
 
+        dnsSelect.innerHTML = '';
+
+        dnsSelect.add(new Option('システムのデフォルト', ''));
+        dnsSelect.add(new Option('カスタム...', 'custom'));
+        
         const addOptionsToSelect = (servers, groupName) => {
             if (servers && servers.length > 0) {
                 const optgroup = document.createElement('optgroup');
                 optgroup.label = groupName;
                 servers.forEach(server => {
-                    const option = document.createElement('option');
-                    option.value = server.ip;
-                    option.textContent = `${server.name} (${server.ip})`;
+                    const option = new Option(`${server.name} (${server.ip})`, server.ip);
+                    if (server.name.toLowerCase() === 'google') {
+                        option.selected = true;
+                    }
                     optgroup.appendChild(option);
                 });
-                dnsSelect.insertBefore(optgroup, dnsSelect.querySelector('option[value="custom"]'));
+                dnsSelect.appendChild(optgroup);
             }
         };
 
@@ -76,6 +91,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (error) {
         console.error("DNSサーバーリストの読み込みに失敗しました:", error);
+        dnsSelect.innerHTML = '<option value="" disabled selected>サーバーリスト読込エラー</option>';
+        dnsSelect.disabled = true;
+        domainInput.disabled = true;
+        nslookupBtn.disabled = true;
+        document.getElementById('nslookup-results').innerHTML = 
+            '<div class="error-message">DNSサーバーリスト(dns_servers.json)の読み込みに失敗したため、NSLOOKUP機能は無効化されました。</div>';
     }
 
     if(dnsSelect && customDnsInput) {
@@ -116,7 +137,7 @@ async function startLookup() {
     showLoader('DNSレコードを検索中...');
 
     try {
-        const results = await eel.nslookup_py(domain, server)();
+        const results = await window.pywebview.api.nslookup_py(domain, server);
         resultsDiv.innerHTML = '';
 
         if (results.error) {
@@ -178,7 +199,7 @@ async function startPortCheck() {
     showLoader('ポートに接続中...');
 
     try {
-        const resultText = await eel.test_port_connection_py(host, port)();
+        const resultText = await window.pywebview.api.test_port_connection_py(host, port);
         resultsDiv.textContent = resultText;
     } catch (error) {
         resultsDiv.textContent = 'アプリケーションでエラーが発生しました。\n' + error;
@@ -205,7 +226,7 @@ async function startPing() {
     showLoader('Pingを実行中...');
     
     try {
-        const resultText = await eel.ping_py(host)();
+        const resultText = await window.pywebview.api.ping_py(host);
         resultsDiv.textContent = `[実行したコマンド: ${command}]\n\n${resultText}`;
     } catch (error) {
         resultsDiv.textContent = 'アプリケーションでエラーが発生しました。\n' + error;
@@ -232,7 +253,7 @@ async function startTraceroute() {
     showLoader('経路を追跡中...');
 
     try {
-        const resultText = await eel.traceroute_py(host)();
+        const resultText = await window.pywebview.api.traceroute_py(host);
         resultsDiv.textContent = `[実行したコマンド: ${command}]\n\n${resultText}`;
     } catch (error) {
         resultsDiv.textContent = 'アプリケーションでエラーが発生しました。\n' + error;
@@ -257,7 +278,7 @@ async function startWhois() {
     showLoader('Whois情報を取得中...');
     
     try {
-        const resultText = await eel.whois_py(target)();
+        const resultText = await window.pywebview.api.whois_py(target);
         resultsDiv.innerHTML = formatWhoisForDisplay(resultText);
     } catch (error) {
         resultsDiv.textContent = 'アプリケーションでエラーが発生しました。\n' + error;
@@ -268,7 +289,7 @@ async function startWhois() {
 }
 
 /**
- * ★追加: Whoisの結果を色分けするヘルパー関数
+ * Whoisの結果を色分けするヘルパー関数
  */
 function formatWhoisForDisplay(text) {
     const escapeHtml = (unsafe) => 
@@ -314,11 +335,10 @@ async function startEmailAuthCheck() {
     selectorContainer.style.display = 'none';
     document.getElementById('dkim-progress-container').style.display = 'block';
 
-    // ★修正: 日付セレクタの引数を削除
-    eel.check_email_auth_py(domain, selector)();
+    window.pywebview.api.check_email_auth_py(domain, selector);
 }
 
-eel.expose(update_dkim_progress, 'update_dkim_progress');
+// Pythonから直接呼び出されるグローバル関数
 function update_dkim_progress(done, total) {
     const progressBar = document.getElementById('dkim-progress-bar');
     const progressText = document.getElementById('dkim-progress-text');
@@ -328,7 +348,7 @@ function update_dkim_progress(done, total) {
     progressText.textContent = `確認中... (${done} / ${total})`;
 }
 
-eel.expose(finish_auth_check, 'finish_auth_check');
+// Pythonから直接呼び出されるグローバル関数
 function finish_auth_check(response) {
     document.getElementById('dkim-progress-container').style.display = 'none';
     const resultsDiv = document.getElementById('emailauth-results');

@@ -12,6 +12,28 @@ body {
     margin: 0 auto;
 }
 
+/* ヘッダーと設定エリアのスタイル */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+.settings-container {
+    display: flex;
+    align-items: center;
+}
+.settings-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+.settings-container label {
+    font-size: 14px;
+    font-weight: normal;
+    color: #555;
+    margin-bottom: 0;
+}
+
 h1, h2 {
     color: #333;
     border-bottom: 2px solid #dee2e6;
@@ -244,7 +266,7 @@ pre, .result-display {
     transition: width 0.2s ease-in-out;
 }
 
-/* ★追加: Whoisの強調表示スタイル */
+/* Whoisの強調表示スタイル */
 .highlight-yellow {
     color: #b45309; /* 濃い黄色 */
     font-weight: bold;

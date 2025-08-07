@@ -9,6 +9,11 @@
 <body>
     <div class="container">
         <h1>レンタルサーバ確認ツール 🛠️</h1>
+        <!-- 最前面表示の切り替えチェックボックス -->
+        <div class="settings-container">
+            <input type="checkbox" id="on-top-toggle">
+            <label for="on-top-toggle">常に最前面に表示</label>
+        </div>
         <!-- Tab Navigation -->
         <div class="tab-buttons">
             <button class="tab-button active" data-tab="nslookup">NSLOOKUP</button>
@@ -31,11 +36,10 @@
             <input type="text" id="domain" value="google.com">
             <label for="dns-server-select"><b>DNSサーバー:</b></label>
             <select id="dns-server-select">
-                <option value="">システムのデフォルト</option>
-                <option value="custom">カスタム...</option>
+                <option value="" disabled>DNSサーバーを読込中...</option>
             </select>
             <input type="text" id="custom-dns-server" placeholder="カスタムDNSサーバーのIP or ドメイン名を入力" style="display: none; margin-top: -10px; margin-bottom: 15px;">
-            <button onclick="startLookup()">NSLOOKUP 実行</button>
+            <button id="nslookup-btn" onclick="startLookup()">NSLOOKUP 実行</button>
             <h3>結果:</h3>
             <div id="nslookup-results">ここに結果が表示されます...</div>
         </div>
@@ -52,14 +56,14 @@
                 <option value="80">80 (HTTP)</option>
                 <option value="110">110 (POP3)</option>
                 <option value="143">143 (IMAP)</option>
-                <option value="443">443 (HTTPS)</option>
+                <option value="443" selected>443 (HTTPS)</option>
                 <option value="465">465 (SMTPS)</option>
                 <option value="587">587 (Submission)</option>
                 <option value="993">993 (IMAPS)</option>
                 <option value="995">995 (POP3S)</option>
-                <option value="custom" selected>カスタム...</option>
+                <option value="custom">カスタム...</option>
             </select>
-            <input type="text" id="portcheck-port-custom" placeholder="ポート番号を入力" style="display: block; margin-top: 10px;">
+            <input type="text" id="portcheck-port-custom" placeholder="ポート番号を入力" style="display: none; margin-top: 10px;">
             <button onclick="startPortCheck()">接続テスト実行</button>
             <h3>結果:</h3>
             <pre id="portcheck-results" class="result-display">ここに接続テストの結果が表示されます...</pre>
@@ -98,7 +102,6 @@
             <input type="text" id="emailauth-domain" value="google.com">
             <label for="dkim-selector"><b>DKIMセレクタ (任意):</b></label>
             <input type="text" id="dkim-selector" placeholder="例: google, default (空欄で一般的な候補を検索)">
-            
             <button onclick="startEmailAuthCheck()">認証レコード確認</button>
             <h3>結果:</h3>
             <div id="emailauth-results">ここに結果が表示されます...</div>
@@ -114,7 +117,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="/eel.js"></script>
     <script type="text/javascript" src="anime.js"></script>
     <script type="text/javascript" src="main.js"></script>
     <div id="loader-overlay">

@@ -1,4 +1,4 @@
-eel
+pywebview
 dnspython
 pyinstaller
 aiodns
