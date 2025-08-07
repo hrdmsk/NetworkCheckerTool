@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main.py', 'dkim_checker.py', 'whois_checker.py'],
+    ['main.py'],
     pathex=[],
     binaries=[],
     datas=[('web', 'web')],
