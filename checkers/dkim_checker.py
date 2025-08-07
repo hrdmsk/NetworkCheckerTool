@@ -1,10 +1,8 @@
-# dkim_checker.py
+# checkers/dkim_checker.py
 import os
 import sys
 import json
-import asyncio
-import aiodns
-import random
+import dns.resolver # 非同期から同期ライブラリへ
 
 def _load_dkim_selectors(filename='dkim_selectors.json'):
     """
@@ -24,24 +22,9 @@ def _load_dkim_selectors(filename='dkim_selectors.json'):
         print(f"ERROR: Failed to load selector file: {e}")
         return []
 
-async def _query_dkim(resolver, selector, domain):
-    """単一のDKIMセレクタを非同期で問い合わせる"""
-    query_domain = f'{selector}._domainkey.{domain}'
-    try:
-        answers = await resolver.query(query_domain, 'TXT')
-        for rdata in answers:
-            if 'v=dkim1' in rdata.text.lower():
-                return {'query': query_domain, 'records': [rdata.text]}
-    except aiodns.error.DNSError:
-        pass
-    except Exception as e:
-        if not isinstance(e, asyncio.TimeoutError):
-            print(f"Query Error for {query_domain}: {e}")
-    return None
-
-async def find_dkim_record_async(domain, dkim_selector="", progress_callback=None, dns_servers=None):
+def find_dkim_record(domain, dkim_selector="", progress_callback=None): # ★変更: 関数名を変更
     """
-    DKIMレコードを非同期で検索する。
+    DKIMレコードを同期的に検索する。
     """
     dkim_data = {'records': []}
     
@@ -56,42 +39,29 @@ async def find_dkim_record_async(domain, dkim_selector="", progress_callback=Non
         dkim_data['status'] = "確認するDKIMセレクタがありませんでした。"
         return dkim_data, []
 
-    resolvers = []
-    if dns_servers and isinstance(dns_servers, list):
-        random.shuffle(dns_servers)
-        for server_ip in dns_servers:
-            try:
-                resolvers.append(aiodns.DNSResolver(nameservers=[server_ip]))
-            except Exception as e:
-                print(f"WARNING: Could not create resolver for {server_ip}: {e}")
+    resolver = dns.resolver.Resolver()
     
-    if not resolvers:
-        resolvers.append(aiodns.DNSResolver())
-
-    resolver_count = len(resolvers)
-    print(f"INFO: Using a pool of {resolver_count} DNS resolvers for DKIM check.")
-
-    tasks = []
+    # 一つずつ順番に問い合わせる
     for i, selector in enumerate(selectors_to_check):
-        resolver = resolvers[i % resolver_count]
-        tasks.append(asyncio.create_task(_query_dkim(resolver, selector, domain)))
-    
-    done_count = 0
-    for future in asyncio.as_completed(tasks):
-        result = await future
-        done_count += 1
-        if progress_callback:
-            progress_callback(done_count, total_selectors)
-            
-        if result:
-            dkim_data = result
-            print("INFO: Record found. Cancelling remaining tasks...")
-            for task in tasks:
-                if not task.done():
-                    task.cancel()
-            break
+        query_domain = f'{selector}._domainkey.{domain}'
+        try:
+            answers = resolver.resolve(query_domain, 'TXT')
+            for rdata in answers:
+                if 'v=dkim1' in rdata.to_text().lower():
+                    dkim_data['query'] = query_domain
+                    dkim_data['records'] = [rdata.to_text().strip('"')]
+                    print("INFO: Record found. Stopping further checks.")
+                    # 見つかった時点で終了
+                    if progress_callback:
+                        progress_callback(i + 1, total_selectors)
+                    return dkim_data, checked_selectors_list
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+            pass # 見つからないのは正常
+        except Exception as e:
+            print(f"Query Error for {query_domain}: {e}")
 
-    await asyncio.gather(*tasks, return_exceptions=True)
+        if progress_callback:
+            progress_callback(i + 1, total_selectors)
 
     if not dkim_data.get('records'):
         dkim_data['status'] = "セレクタ候補ではDKIMレコードが見つかりませんでした。"

@@ -1,26 +1,22 @@
 import dns.resolver
+import socket
 import sys
 import threading
-import asyncio
 import json
 import os
 from datetime import datetime
 
 from checkers import whois_checker, dkim_checker, dns_checker, network_checker
 
-# このモジュールでウィンドウオブジェクトを保持するためのグローバル変数
 _window = None
 
 def set_window_for_api(window):
-    """main.pyからwindowオブジェクトを受け取り、グローバル変数に格納する"""
     global _window
     _window = window
 
 class Api:
     def __init__(self):
-        self.dkim_cancel_event = threading.Event()
-        self.dkim_thread = None
-        # self.windowを削除
+        pass
 
     def toggle_on_top(self, is_on_top):
         if _window:
@@ -43,13 +39,8 @@ class Api:
         return whois_checker.get_whois_info(query)
 
     def check_email_auth_py(self, domain, dkim_selector):
-        if self.dkim_thread and self.dkim_thread.is_alive():
-            self.dkim_cancel_event.set()
-            self.dkim_thread.join()
-        
-        self.dkim_cancel_event.clear()
-        self.dkim_thread = threading.Thread(target=self._run_auth_check, args=(domain, dkim_selector))
-        self.dkim_thread.start()
+        thread = threading.Thread(target=self._run_auth_check, args=(domain, dkim_selector))
+        thread.start()
         return {'status': 'started'}
 
     def _run_auth_check(self, domain, dkim_selector):
@@ -90,8 +81,10 @@ class Api:
             def update_progress(done, total):
                 if _window: _window.evaluate_js(f'update_dkim_progress({done}, {total})')
 
-            dkim_result, checked_selectors = asyncio.run(
-                dkim_checker.find_dkim_record_async(domain, dkim_selector, progress_callback=update_progress, dns_servers=public_dns_list)
+            # ★変更: asyncio.run を削除し、同期関数を直接呼び出し
+            dkim_result, checked_selectors = dkim_checker.find_dkim_record(
+                domain, dkim_selector,
+                progress_callback=update_progress
             )
             
             dkim_data = {'type': 'DKIM'}
