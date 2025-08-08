@@ -4,7 +4,7 @@ import os
 from api import Api, set_window_for_api
 
 # 最新バージョンが記載されたテキストファイルのURLのみを定義
-VERSION_URL = "https://raw.githubusercontent.com/user/repo/main/version.txt" 
+VERSION_URL = "https://raw.githubusercontent.com/hrdmsk/RentalServerChecker/main/version.txt" 
 
 window = None
 
@@ -22,12 +22,10 @@ if __name__ == '__main__':
     set_window_for_api(window) 
     
     def on_loaded():
-        # バージョン番号を渡さず、URLのみを渡す
         api.check_for_updates(VERSION_URL)
 
     def on_closed():
         print('ウィンドウが閉じられました。アプリケーションを終了します。')
-        os._exit(0)
 
     window.events.loaded += on_loaded
     window.events.closed += on_closed

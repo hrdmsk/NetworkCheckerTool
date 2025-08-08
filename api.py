@@ -3,9 +3,9 @@ import sys
 import threading
 import json
 import os
-from datetime import datetime
 
 from checkers import whois_checker, dkim_checker, dns_checker, network_checker, update_checker
+from logger_setup import log_execution
 
 _window = None
 
@@ -13,49 +13,58 @@ def set_window_for_api(window):
     global _window
     _window = window
 
+def _get_app_version():
+    """version.txtから現在のアプリケーションバージョンを読み込む"""
+    try:
+        base_path = sys._MEIPASS if hasattr(sys, '_MEIPASS') else '.'
+        file_path = os.path.join(base_path, 'version.txt')
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    except Exception as e:
+        print(f"ERROR: Could not read version.txt: {e}")
+        return "N/A" 
+
 class Api:
     def __init__(self):
         self.dkim_cancel_event = threading.Event()
         self.dkim_thread = None
-        
-    def check_for_updates(self, current_version, version_url):
+
+    def get_app_version(self):
+        """UIにバージョンを渡すための関数"""
+        return _get_app_version()
+
+    def check_for_updates(self, version_url):
         """アップデートチェックをバックグラウンドで開始する"""
-        thread = threading.Thread(target=self._run_update_check, args=(current_version, version_url))
+        thread = threading.Thread(target=self._run_update_check, args=(version_url,))
         thread.start()
 
-    def _run_update_check(self, current_version, version_url):
+    def _run_update_check(self, version_url):
         """実際のアップデートチェック処理"""
+        current_version = _get_app_version()
         # update_checkerライブラリを呼び出す
-        latest_version = update_checker.get_latest_version(version_url)
-        
-        if latest_version:
-            print(f"INFO: Current version: {current_version}, Latest version: {latest_version}")
-            if latest_version > current_version:
-                print(f"INFO: New version found: {latest_version}")
-                download_url = "https://github.com/user/repo/releases"
-                if _window:
-                    _window.evaluate_js(f'show_update_notification("{latest_version}", "{download_url}")')
+        update_checker.check(current_version, version_url, _window)
 
     def toggle_on_top(self, is_on_top):
         if _window:
             threading.Timer(0.01, lambda: setattr(_window, 'on_top', is_on_top)).start()
 
     # --- 各機能の呼び出し ---
+    @log_execution
     def nslookup_py(self, domain, server):
         return dns_checker.nslookup(domain, server)
-
+    @log_execution
     def test_port_connection_py(self, host, port_str):
         return network_checker.test_port_connection(host, port_str)
-
+    @log_execution
     def ping_py(self, host):
         return network_checker.ping(host)
-
+    @log_execution
     def traceroute_py(self, host):
         return network_checker.traceroute(host)
-
+    @log_execution
     def whois_py(self, query):
         return whois_checker.get_whois_info(query)
-
+    @log_execution
     def check_email_auth_py(self, domain, dkim_selector):
         thread = threading.Thread(target=self._run_auth_check, args=(domain, dkim_selector))
         thread.start()

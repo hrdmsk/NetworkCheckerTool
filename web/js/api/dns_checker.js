@@ -1,4 +1,4 @@
-/** DNS Checker JavaScript */
+// web/js/api_calls/nslookup.js
 async function startLookup() {
     const domain = document.getElementById('domain').value;
     const resultsDiv = document.getElementById('nslookup-results');
@@ -30,7 +30,8 @@ async function startLookup() {
             if (item.records && item.records.length > 0) {
                 item.records.forEach(record => {
                     const p = document.createElement('p');
-                    p.textContent = record;
+                    // textContentからinnerTextに変更し、改行を正しく表示
+                    p.innerText = record; 
                     body.appendChild(p);
                 });
             } else {

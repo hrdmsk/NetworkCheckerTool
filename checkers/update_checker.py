@@ -1,22 +1,31 @@
 # checkers/update_checker.py
 import urllib.request
 
-def get_latest_version(version_url):
+def _compare_versions(v1, v2):
+    """バージョン文字列 (例: '1.0.10') を数値として正しく比較する"""
+    parts1 = [int(p) for p in v1.split('.')]
+    parts2 = [int(p) for p in v2.split('.')]
+    return parts1 > parts2
+
+def check(current_version, version_url, window):
     """
-    指定されたURLから最新のバージョン番号を取得します。
-    成功した場合はバージョン文字列を、失敗した場合はNoneを返します。
+    指定されたURLから最新バージョンを取得し、現在のバージョンと比較します。
+    新しいバージョンが見つかった場合、UIに通知を表示します。
     """
     try:
+        if current_version == "N/A":
+            return # ローカルバージョンが読めなければ何もしない
+
         print(f"INFO: Checking for updates from {version_url}")
-        # タイムアウトを5秒に設定して、URLにアクセス
         with urllib.request.urlopen(version_url, timeout=5) as response:
             if response.status == 200:
-                # 読み込んだ内容をUTF-8でデコードし、余分な空白を削除
                 latest_version = response.read().decode('utf-8').strip()
-                return latest_version
+                print(f"INFO: Current version: {current_version}, Latest version: {latest_version}")
+                
+                # 数値としてバージョンを比較
+                if _compare_versions(latest_version, current_version):
+                    print(f"INFO: New version found: {latest_version}")
+                    if window:
+                        window.evaluate_js(f'show_update_notification("{latest_version}")')
     except Exception as e:
-        # エラーが発生した場合はログに記録
         print(f"ERROR: Failed to check for updates: {e}")
-    
-    # 失敗した場合はNoneを返す
-    return None

@@ -3,16 +3,32 @@ import dns.resolver
 import socket
 
 def _get_ip_string(hostname, resolver):
+    """
+    指定されたホスト名のAおよびAAAAレコードを解決し、改行された文字列を返す。
+    """
     ips = []
+    
+    # Aレコード (IPv4)
     try:
         a_answers = resolver.resolve(hostname, 'A')
-        for rdata in a_answers: ips.append(f"A: {rdata}")
-    except Exception: pass
+        for rdata in a_answers:
+            ips.append(f"A: {rdata}")
+    except Exception:
+        pass
+        
+    # AAAAレコード (IPv6)
     try:
         aaaa_answers = resolver.resolve(hostname, 'AAAA')
-        for rdata in aaaa_answers: ips.append(f"AAAA: {rdata}")
-    except Exception: pass
-    return f" ({', '.join(ips)})" if ips else ""
+        for rdata in aaaa_answers:
+            ips.append(f"AAAA: {rdata}")
+    except Exception:
+        pass
+    
+    # 結果を改行して見やすく整形
+    if ips:
+        # 各IPの前にインデントと矢印を追加して、見やすくする
+        return "\n    -> " + "\n    -> ".join(ips)
+    return ""
 
 def nslookup(domain, server):
     if not domain: return {'error': "ドメイン名を入力してください。"}
