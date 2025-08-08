@@ -96,7 +96,7 @@ pre, .result-display, .result-card {
     -webkit-user-select: text; /* Safari用 */
 }
 
-/* --- ★変更: ナビゲーションタブのスタイル --- */
+/* --- ナビゲーションタブのスタイル --- */
 .tab-nav {
     border-bottom: 2px solid #ccc;
     margin-bottom: 1.5em;
