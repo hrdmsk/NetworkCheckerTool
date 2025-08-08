@@ -5,7 +5,7 @@ import json
 import os
 from datetime import datetime
 
-from checkers import whois_checker, dkim_checker, dns_checker, network_checker
+from checkers import whois_checker, dkim_checker, dns_checker, network_checker, update_checker
 
 _window = None
 
@@ -15,7 +15,26 @@ def set_window_for_api(window):
 
 class Api:
     def __init__(self):
-        pass
+        self.dkim_cancel_event = threading.Event()
+        self.dkim_thread = None
+        
+    def check_for_updates(self, current_version, version_url):
+        """アップデートチェックをバックグラウンドで開始する"""
+        thread = threading.Thread(target=self._run_update_check, args=(current_version, version_url))
+        thread.start()
+
+    def _run_update_check(self, current_version, version_url):
+        """実際のアップデートチェック処理"""
+        # update_checkerライブラリを呼び出す
+        latest_version = update_checker.get_latest_version(version_url)
+        
+        if latest_version:
+            print(f"INFO: Current version: {current_version}, Latest version: {latest_version}")
+            if latest_version > current_version:
+                print(f"INFO: New version found: {latest_version}")
+                download_url = "https://github.com/user/repo/releases"
+                if _window:
+                    _window.evaluate_js(f'show_update_notification("{latest_version}", "{download_url}")')
 
     def toggle_on_top(self, is_on_top):
         if _window:

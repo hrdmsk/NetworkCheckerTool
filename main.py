@@ -1,7 +1,11 @@
 import webview
-from api import Api, set_window_for_api # set_window_for_apiをインポート
+import sys
+import os
+from api import Api, set_window_for_api
 
-# api.py内のバックグラウンド処理からUIを更新するために必要
+# 最新バージョンが記載されたテキストファイルのURLのみを定義
+VERSION_URL = "https://raw.githubusercontent.com/user/repo/main/version.txt" 
+
 window = None
 
 if __name__ == '__main__':
@@ -15,7 +19,17 @@ if __name__ == '__main__':
         text_select=True
     )
     
-    # api.pyにwindowオブジェクトを渡す
     set_window_for_api(window) 
+    
+    def on_loaded():
+        # バージョン番号を渡さず、URLのみを渡す
+        api.check_for_updates(VERSION_URL)
+
+    def on_closed():
+        print('ウィンドウが閉じられました。アプリケーションを終了します。')
+        os._exit(0)
+
+    window.events.loaded += on_loaded
+    window.events.closed += on_closed
     
     webview.start()

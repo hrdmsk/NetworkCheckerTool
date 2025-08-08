@@ -37,7 +37,7 @@ def _get_whois_server(domain):
 def _query_rdap(domain):
     """ドメインのRDAP情報を取得します (urllib.request版)"""
     tld = domain.split('.')[-1].lower()
-    bootstrap_url = f"https://rdap.iana.org/domain/{tld}" # ★変更: より正確なIANAのエンドポイントを使用
+    bootstrap_url = f"https://rdap.iana.org/domain/{tld}" # IANAのエンドポイントを使用
     
     try:
         # 1. IANAに問い合わせて、権威RDAPサーバーのURLを取得

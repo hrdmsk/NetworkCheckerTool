@@ -285,3 +285,17 @@ pre, .result-display {
     background-color: #007bff;
     transition: width 0.2s ease-in-out;
 }
+
+/* --- フッターのスタイル --- */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    text-align: right;
+    font-size: 12px;
+    color: #6c757d;
+}
