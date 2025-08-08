@@ -313,7 +313,7 @@ pre, .result-display {
     justify-content: center;
     align-items: center;
     display: flex; /* デバッグ用に一時的に表示 */
-    visibility: hidden; /* ★JSで切り替え */
+    visibility: hidden; /* JSで切り替え */
     opacity: 0; /* JSで切り替え */
     transition: opacity 0.3s ease;
 }
