@@ -1,5 +1,4 @@
 import dns.resolver
-import socket
 import sys
 import threading
 import json
@@ -81,7 +80,7 @@ class Api:
             def update_progress(done, total):
                 if _window: _window.evaluate_js(f'update_dkim_progress({done}, {total})')
 
-            # ★変更: asyncio.run を削除し、同期関数を直接呼び出し
+            # asyncio.run を削除し、同期関数を直接呼び出し
             dkim_result, checked_selectors = dkim_checker.find_dkim_record(
                 domain, dkim_selector,
                 progress_callback=update_progress
