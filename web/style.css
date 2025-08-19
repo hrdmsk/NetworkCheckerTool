@@ -22,9 +22,8 @@ body {
 .settings-container {
     display: flex;
     align-items: center;
-    gap: 8px; /* スイッチとラベルの間のスペース */
+    gap: 8px;
 }
-
 .settings-container label.switch-label {
     font-size: 14px;
     font-weight: normal;
@@ -33,146 +32,52 @@ body {
     cursor: pointer;
 }
 
-
 h1, h2 {
     color: #333;
     border-bottom: 2px solid #dee2e6;
     padding-bottom: 0.5em;
 }
-h1 { font-size: 1.8em; margin-bottom: 0; border-bottom: none; } /* h1のスタイルを調整 */
+h1 { font-size: 1.8em; margin-bottom: 0; border-bottom: none; }
 h2 { font-size: 1.4em; margin-top: 1.5em; margin-bottom: 1em;}
 
 /* --- スライドボタンのスタイル --- */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-.switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-}
-input:checked + .slider {
-  background-color: #007bff;
-}
-input:focus + .slider {
-  box-shadow: 0 0 1px #007bff;
-}
-input:checked + .slider:before {
-  transform: translateX(20px);
-}
-.slider.round {
-  border-radius: 24px;
-}
-.slider.round:before {
-  border-radius: 50%;
-}
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: #007bff; }
+input:focus + .slider { box-shadow: 0 0 1px #007bff; }
+input:checked + .slider:before { transform: translateX(20px); }
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
 
 /* --- 結果表示エリアのスタイル --- */
 pre, .result-display, .result-card {
-    user-select: text; /* テキスト選択を可能にする */
-    -webkit-user-select: text; /* Safari用 */
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 /* --- ナビゲーションタブのスタイル --- */
-.tab-nav {
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 1.5em;
-}
-.tab-nav ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-}
-.tab-nav li {
-    position: relative;
-}
-.tab-nav .tab-link {
-    display: block;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 15px;
-    border-bottom: 3px solid transparent;
-    color: #555;
-    font-weight: 500;
-    text-decoration: none;
-    margin-bottom: -2px; /* 下線を親のボーダーに重ねる */
-}
-.tab-nav .tab-link.active {
-    border-bottom-color: #007bff;
-    color: #007bff;
-}
-
+.tab-nav { border-bottom: 2px solid #ccc; margin-bottom: 1.5em; }
+.tab-nav ul { margin: 0; padding: 0; list-style: none; display: flex; }
+.tab-nav li { position: relative; }
+.tab-nav .tab-link { display: block; padding: 8px 16px; cursor: pointer; font-size: 15px; border-bottom: 3px solid transparent; color: #555; font-weight: 500; text-decoration: none; margin-bottom: -2px; }
+.tab-nav .tab-link.active { border-bottom-color: #007bff; color: #007bff; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    min-width: 160px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    z-index: 1;
-    margin-top: 5px;
-}
-.dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 15px;
-}
+.dropdown-content { display: none; position: absolute; background-color: #fff; min-width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #ddd; border-radius: 5px; z-index: 1; margin-top: 5px; }
+.dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 15px; }
 .dropdown-content a:hover { background-color: #f4f4f9; }
 .dropdown-content.show { display: block; }
 
 /* --- フォーム要素のスタイル --- */
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5em;
-    color: #555;
-}
+label { display: block; font-weight: bold; margin-bottom: 0.5em; color: #555; }
+input[type="text"], select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+optgroup { font-weight: bold; font-style: italic; }
 
-input[type="text"], select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-optgroup {
-    font-weight: bold;
-    font-style: italic;
-}
-
-button {
+/* --- ボタンのスタイルを役割ごとに分離 --- */
+/* 実行ボタン (例: NSLOOKUP 実行) */
+.action-btn {
     display: block;
     width: 100%;
     padding: 12px 15px;
@@ -185,162 +90,72 @@ button {
     transition: background-color 0.2s;
     margin-top: 10px;
 }
-button:hover { background-color: #0056b3; }
+.action-btn:hover { background-color: #0056b3; }
+
+/* 結果ヘッダーとコピーボタン */
+.result-header-area { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5em; }
+.result-header-area h3 { margin: 0; }
+
+/* 静的なコピーボタン (preタグの横) */
+.clipboard-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.clipboard-btn:hover { background-color: #5a6268; }
+.clipboard-btn.copied { background-color: #28a745; }
+
+/* カード内コピーボタン */
+.result-header { display: flex; justify-content: space-between; align-items: center; background-color: #f7f7f7; padding: 10px 15px; font-weight: bold; border-bottom: 1px solid #ddd; }
+.clipboard-btn-card { background: none; border: 1px solid #ccc; border-radius: 5px; padding: 2px 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+.clipboard-btn-card:hover { background-color: #e9ecef; }
+.clipboard-btn-card.copied { background-color: #28a745; border-color: #28a745; color: white; }
+
+/* モーダル内のボタン */
+.modal-buttons .modal-btn { width: auto; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+.modal-buttons .modal-btn:hover { background-color: #0056b3; }
+
 
 /* --- 結果表示エリアのスタイル --- */
-pre, .result-display {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: "Courier New", Courier, monospace;
-    background-color: #e9ecef;
-    padding: 1em;
-    border-radius: 5px;
-    margin-top: 1.5em;
-    min-height: 150px;
-    border: 1px solid #ddd;
-}
-
+pre, .result-display { white-space: pre-wrap; word-wrap: break-word; font-family: "Courier New", Courier, monospace; background-color: #e9ecef; padding: 1em; border-radius: 5px; margin-top: 1.5em; min-height: 150px; border: 1px solid #ddd; }
 #nslookup-results, #emailauth-results { margin-top: 1.5em; }
-
-.result-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
+.ip-lookup-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    padding: 1px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background-color 0.2s;
 }
-.result-header {
-    background-color: #f7f7f7;
-    padding: 10px 15px;
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
+.ip-lookup-btn:hover {
+    background-color: #e2e6ea;
 }
+.result-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1em; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); overflow: hidden; }
 .result-body { padding: 15px; line-height: 1.6; }
 .result-body p { margin: 0 0 5px 0; }
 .status-message { color: #6c757d; font-style: italic; }
-.error-message {
-    color: #dc3545;
-    font-weight: bold;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 15px;
-    border-radius: 5px;
-}
+.error-message { color: #dc3545; font-weight: bold; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 5px; }
+.highlight-yellow { background-color: #fff3cd; color: #664d03; }
+.highlight-green { background-color: #d1e7dd; color: #0f5132; }
 
-/* Whois結果のハイライト用スタイル */
-.highlight-yellow {
-    background-color: #fff3cd;
-    color: #664d03;
-}
-.highlight-green {
-    background-color: #d1e7dd;
-    color: #0f5132;
-}
-
-/* --- ローディングと進捗バーのスタイル --- */
-#loader-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
-    z-index: 9999;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.loader {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #007bff;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-}
-
-.loader-text {
-    margin-top: 15px;
-    font-family: sans-serif;
-    color: #333;
-    font-size: 1.2em;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.progress-bar {
-    width: 100%;
-    background-color: #e9ecef;
-    border-radius: 5px;
-    height: 10px;
-    overflow: hidden;
-}
-.progress-bar-inner {
-    height: 100%;
-    width: 0%;
-    background-color: #007bff;
-    transition: width 0.2s ease-in-out;
-}
-
-/* --- フッターのスタイル --- */
-.app-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 5px 10px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-    text-align: right;
-    font-size: 12px;
-    color: #6c757d;
-}
-
-/* --- アップデート通知モーダルのスタイル --- */
-.modal-overlay {
-    display: none; /* JSで表示を切り替える */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 10000;
-    justify-content: center;
-    align-items: center;
-    display: flex; /* デバッグ用に一時的に表示 */
-    visibility: hidden; /* JSで切り替え */
-    opacity: 0; /* JSで切り替え */
-    transition: opacity 0.3s ease;
-}
-.modal-overlay.show {
-    visibility: visible;
-    opacity: 1;
-}
-.modal-content {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-}
-.modal-content h3 {
-    margin-top: 0;
-    color: #333;
-    border-bottom: none;
-    padding-bottom: 0;
-}
-.modal-content p {
-    margin-bottom: 20px;
-    color: #555;
-}
-.modal-buttons button {
-    width: auto;
-    padding: 10px 20px;
-}
+/* --- ローディングと進捗バー、フッター、モーダルのスタイル --- */
+#loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.7); z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; }
+.loader { border: 5px solid #f3f3f3; border-top: 5px solid #007bff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+.loader-text { margin-top: 15px; font-family: sans-serif; color: #333; font-size: 1.2em; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.progress-bar { width: 100%; background-color: #e9ecef; border-radius: 5px; height: 10px; overflow: hidden; }
+.progress-bar-inner { height: 100%; width: 0%; background-color: #007bff; transition: width 0.2s ease-in-out; }
+.app-footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 5px 10px; background-color: #f8f9fa; border-top: 1px solid #dee2e6; text-align: right; font-size: 12px; color: #6c757d; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 10000; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: opacity 0.3s ease; }
+.modal-overlay.show { visibility: visible; opacity: 1; }
+.modal-content { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; max-width: 400px; text-align: center; }
+.modal-content h3 { margin-top: 0; color: #333; border-bottom: none; padding-bottom: 0; }
+.modal-content p { margin-bottom: 20px; color: #555; }

@@ -44,6 +44,11 @@ function finish_auth_check(response) {
         let headerText = `${item.type} レコード`;
         if (item.type === 'DKIM' && item.query) { headerText += ` (${item.query})`; }
         header.textContent = headerText;
+        // ヘッダーにタイトルとコピーボタンを追加
+        header.innerHTML = `
+            <span class="result-header-title">${item.type} レコード</span>
+            <button class="copy-btn-card" title="この結果をコピー">📋</button>
+        `;
         const body = document.createElement('div');
         body.className = 'result-body';
         if (item.records && item.records.length > 0) {

@@ -5,6 +5,7 @@ import socket
 def _get_ip_string(hostname, resolver):
     """
     指定されたホスト名のAおよびAAAAレコードを解決し、改行された文字列を返す。
+    ★変更: 各IPの前に目印を追加。
     """
     ips = []
     
@@ -12,7 +13,7 @@ def _get_ip_string(hostname, resolver):
     try:
         a_answers = resolver.resolve(hostname, 'A')
         for rdata in a_answers:
-            ips.append(f"A: {rdata}")
+            ips.append(f"A: [IP]{rdata}") # ★変更
     except Exception:
         pass
         
@@ -20,13 +21,11 @@ def _get_ip_string(hostname, resolver):
     try:
         aaaa_answers = resolver.resolve(hostname, 'AAAA')
         for rdata in aaaa_answers:
-            ips.append(f"AAAA: {rdata}")
+            ips.append(f"AAAA: [IP]{rdata}") # ★変更
     except Exception:
         pass
     
-    # 結果を改行して見やすく整形
     if ips:
-        # 各IPの前にインデントと矢印を追加して、見やすくする
         return "\n    -> " + "\n    -> ".join(ips)
     return ""
 
@@ -46,7 +45,9 @@ def nslookup(domain, server):
         try:
             answers = resolver.resolve(domain, r_type)
             for rdata in answers:
-                if r_type == 'CNAME':
+                if r_type == 'A' or r_type == 'AAAA':
+                    record_data['records'].append(f"[IP]{rdata}") # ★変更
+                elif r_type == 'CNAME':
                     target = rdata.target.to_text().strip('.')
                     ip_string = _get_ip_string(target, resolver)
                     record_data['records'].append(f"{target}{ip_string}")

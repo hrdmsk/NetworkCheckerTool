@@ -1,4 +1,4 @@
-// web/js/api_calls/nslookup.js
+// web/js/api_calls/dns_checker.js
 async function startLookup() {
     const domain = document.getElementById('domain').value;
     const resultsDiv = document.getElementById('nslookup-results');
@@ -24,14 +24,23 @@ async function startLookup() {
             card.className = 'result-card';
             const header = document.createElement('div');
             header.className = 'result-header';
-            header.textContent = `${item.type} レコード`;
+            header.innerHTML = `<span class="result-header-title">${item.type} レコード</span>`;
+            
             const body = document.createElement('div');
             body.className = 'result-body';
             if (item.records && item.records.length > 0) {
                 item.records.forEach(record => {
                     const p = document.createElement('p');
-                    // textContentからinnerTextに変更し、改行を正しく表示
-                    p.innerText = record; 
+                    
+                    // ★修正: 改行を<br>に変換し、IPアドレスにWhoisボタンを追加する
+                    const ipRegex = /\[IP\]([0-9a-fA-F:.]+)/g;
+                    let processedRecord = record.replace(/\n/g, '<br>'); // まず改行を<br>に変換
+                    
+                    processedRecord = processedRecord.replace(ipRegex, (match, ip) => {
+                        return `${ip} <button class="ip-lookup-btn" data-ip="${ip}">Whois</button>`;
+                    });
+
+                    p.innerHTML = processedRecord;
                     body.appendChild(p);
                 });
             } else {

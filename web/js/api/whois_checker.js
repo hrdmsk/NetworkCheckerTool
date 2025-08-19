@@ -38,7 +38,7 @@ function formatWhoisForDisplay(text) {
             return `<span class="highlight-yellow">${escapedLine}</span>`;
         }
         // ハイライトするキーワードを限定
-        if (escapedLine.match(/Creation Date|Updated Date|Expiration Date|Expiry Date|登録年月日|有効期限|最終更新/i)) {
+        if (escapedLine.match(/Creation Date|Updated Date|Expiration Date|Expiry Date|Organization|登録年月日|有効期限|最終更新/i)) {
             return `<span class="highlight-green">${escapedLine}</span>`;
         }
         return escapedLine;

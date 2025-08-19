@@ -22,7 +22,7 @@ def _load_dkim_selectors(filename='dkim_selectors.json'):
         print(f"ERROR: Failed to load selector file: {e}")
         return []
 
-def find_dkim_record(domain, dkim_selector="", progress_callback=None): # ★変更: 関数名を変更
+def find_dkim_record(domain, dkim_selector="", progress_callback=None): # 関数名を変更
     """
     DKIMレコードを同期的に検索する。
     """

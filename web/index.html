@@ -8,16 +8,17 @@
 </head>
 <body>
     <div class="container">
-        <h1>レンタルサーバ確認ツール 🛠️</h1>
-        <!-- 最前面表示の切り替えチェックボックス -->
-        <div class="settings-container">
-            <label class="switch">
-                <input type="checkbox" id="on-top-toggle">
-                <span class="slider round"></span>
-            </label>
-            <label for="on-top-toggle" class="switch-label">常に最前面に表示</label>
+        <div class="header-container">
+            <h1>レンタルサーバ確認ツール 🛠️</h1>
+            <div class="settings-container">
+                <label class="switch">
+                    <input type="checkbox" id="on-top-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <label for="on-top-toggle" class="switch-label">常に最前面に表示</label>
+            </div>
         </div>
-        <!-- Tab Navigation -->
+        
         <nav class="tab-nav">
             <ul>
                 <li><a href="#" class="tab-link active" data-tab="nslookup">NSLOOKUP</a></li>
@@ -44,8 +45,8 @@
                 <option value="" disabled>DNSサーバーを読込中...</option>
             </select>
             <input type="text" id="custom-dns-server" placeholder="カスタムDNSサーバーのIP or ドメイン名を入力" style="display: none; margin-top: -10px; margin-bottom: 15px;">
-            <button id="nslookup-btn" onclick="startLookup()">NSLOOKUP 実行</button>
-            <h3>結果:</h3>
+            <button class="action-btn" id="nslookup-btn" onclick="startLookup()">NSLOOKUP 実行</button>
+            <div class="result-header-area"><h3>結果:</h3></div>
             <div id="nslookup-results">ここに結果が表示されます...</div>
         </div>
         <!-- ポート接続確認タブ -->
@@ -69,8 +70,8 @@
                 <option value="custom">カスタム...</option>
             </select>
             <input type="text" id="portcheck-port-custom" placeholder="ポート番号を入力" style="display: none; margin-top: 10px;">
-            <button onclick="startPortCheck()">接続テスト実行</button>
-            <h3>結果:</h3>
+            <button class="action-btn" onclick="startPortCheck()">接続テスト実行</button>
+            <div class="result-header-area"><h3>結果:</h3><button class="clipboard-btn" data-target="portcheck-results">📋 コピー</button></div>
             <pre id="portcheck-results" class="result-display">ここに接続テストの結果が表示されます...</pre>
         </div>
         <!-- Pingタブ -->
@@ -78,8 +79,8 @@
             <h2>Ping (疎通確認)</h2>
             <label for="ping-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
             <input type="text" id="ping-host" value="8.8.8.8">
-            <button onclick="startPing()">Ping実行</button>
-            <h3>結果:</h3>
+            <button class="action-btn" onclick="startPing()">Ping実行</button>
+            <div class="result-header-area"><h3>結果:</h3><button class="clipboard-btn" data-target="ping-results">📋 コピー</button></div>
             <pre id="ping-results" class="result-display">ここにPingの結果が表示されます...</pre>
         </div>
         <!-- Tracerouteタブ -->
@@ -87,8 +88,8 @@
             <h2>Traceroute (経路追跡)</h2>
             <label for="traceroute-host"><b>ホスト (ドメイン名 or IPアドレス):</b></label>
             <input type="text" id="traceroute-host" value="google.com">
-            <button onclick="startTraceroute()">Traceroute実行</button>
-            <h3>結果:</h3>
+            <button class="action-btn" onclick="startTraceroute()">Traceroute実行</button>
+            <div class="result-header-area"><h3>結果:</h3><button class="clipboard-btn" data-target="traceroute-results">📋 コピー</button></div>
             <pre id="traceroute-results" class="result-display">ここにTracerouteの結果が表示されます...</pre>
         </div>
         <!-- Whoisタブ -->
@@ -96,8 +97,8 @@
             <h2>Whois (情報検索)</h2>
             <label for="whois-target"><b>ドメイン名 or IPアドレス:</b></label>
             <input type="text" id="whois-target" value="google.com">
-            <button onclick="startWhois()">Whois情報取得</button>
-            <h3>結果:</h3>
+            <button class="action-btn" onclick="startWhois()">Whois情報取得</button>
+            <div class="result-header-area"><h3>結果:</h3><button class="clipboard-btn" data-target="whois-results">📋 コピー</button></div>
             <pre id="whois-results" class="result-display">ここにWhois情報が表示されます...</pre>
         </div>
         <!-- メール認証タブ -->
@@ -107,8 +108,8 @@
             <input type="text" id="emailauth-domain" value="google.com">
             <label for="dkim-selector"><b>DKIMセレクタ (任意):</b></label>
             <input type="text" id="dkim-selector" placeholder="例: google, default (空欄で一般的な候補を検索)">
-            <button onclick="startEmailAuthCheck()">認証レコード確認</button>
-            <h3>結果:</h3>
+            <button class="action-btn" onclick="startEmailAuthCheck()">認証レコード確認</button>
+            <div class="result-header-area"><h3>結果:</h3></div>
             <div id="emailauth-results">ここに結果が表示されます...</div>
             <div id="checked-selectors-container" style="display: none; margin-top: 20px;">
                 <h4>確認したセレクタ候補:</h4>
@@ -122,12 +123,13 @@
             </div>
         </div>
     </div>
+    <!-- Ver check -->
     <div id="update-modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <h3 id="update-modal-title"></h3>
             <p>新しいバージョンが利用可能です。<br>配布元からダウンロードしてください。</p>
             <div class="modal-buttons">
-                <button id="update-modal-close">閉じる</button>
+                <button id="update-modal-close" class="modal-btn">閉じる</button>
             </div>
         </div>
     </div>
@@ -139,6 +141,7 @@
     <script type="text/javascript" src="js/api/windowscmd.js"></script>
     <script type="text/javascript" src="js/api/dkim_checker.js"></script>
     <script type="text/javascript" src="js/api/update_checker.js"></script>
+    <script type="text/javascript" src="js/clipboard_handler.js"></script>
     <div id="loader-overlay">
         <div class="loader"></div>
         <div class="loader-text">処理中...</div>

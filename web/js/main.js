@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const contentPanes = document.querySelectorAll('.tab-content');
     const dropdownBtn = document.getElementById('dropdown-btn');
     const dropdownMenu = document.getElementById('dropdown-menu');
-
     tabLinks.forEach(link => {
         // ドロップダウンの親ボタン自体はタブ切り替えを行わないので除外
         if (link.id === 'dropdown-btn') return;
@@ -112,6 +111,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (portSelect && customPortInput) {
         portSelect.addEventListener('change', () => {
             customPortInput.style.display = (portSelect.value === 'custom') ? 'block' : 'none';
+        });
+    }
+    const nslookupResults = document.getElementById('nslookup-results');
+    if (nslookupResults) {
+        nslookupResults.addEventListener('click', (event) => {
+            // クリックされたのがWhoisボタンか確認
+            if (event.target.classList.contains('ip-lookup-btn')) {
+                const ip = event.target.dataset.ip;
+                if (ip) {
+                    console.log(`IP to lookup: ${ip}`);
+                    // 1. Whoisタブの入力欄にIPを自動入力
+                    document.getElementById('whois-target').value = ip;
+                    // 2. Whoisタブに切り替え
+                    document.querySelector('.tab-nav a[data-tab="whois"]').click();
+                    // 3. Whois検索を自動実行
+                    startWhois();
+                }
+            }
         });
     }
 });
