@@ -1,4 +1,4 @@
-/** DNS Checker JavaScript */
+// web/js/api_calls/dkim_checker.js
 
 async function startEmailAuthCheck() {
     const domain = document.getElementById('emailauth-domain').value;
@@ -41,14 +41,15 @@ function finish_auth_check(response) {
         card.className = 'result-card';
         const header = document.createElement('div');
         header.className = 'result-header';
+        
         let headerText = `${item.type} レコード`;
         if (item.type === 'DKIM' && item.query) { headerText += ` (${item.query})`; }
-        header.textContent = headerText;
-        // ヘッダーにタイトルとコピーボタンを追加
+
         header.innerHTML = `
-            <span class="result-header-title">${item.type} レコード</span>
-            <button class="copy-btn-card" title="この結果をコピー">📋</button>
+            <span class="result-header-title">${headerText}</span>
+            <button class="clipboard-btn-card" title="この結果をコピー">📋</button>
         `;
+
         const body = document.createElement('div');
         body.className = 'result-body';
         if (item.records && item.records.length > 0) {
